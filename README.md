@@ -20,7 +20,9 @@ admin-web (React) ──┘          │
 
 ## How to run
 
-_Not set up yet._ Steps will be added as each app is created.
+1. **backend**: see `backend/README.md` (PostgreSQL, `.env`, `npm run dev` on port 3001)
+2. **admin-web**: see `admin-web/README.md` (`npm run dev`, then open http://localhost:5173)
+3. **pos-app**: not started yet
 
 ## Rules
 

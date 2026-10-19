@@ -13,12 +13,18 @@ Without it, these routes answer `503`.
 
 | Method | Path | Body / query | Calls | Success |
 |---|---|---|---|---|
-| POST | `/api/auth/login` | `{ login_id, password }` | `Merchant/Login` | `200 { token }` |
+| POST | `/api/auth/login` | `{ login_id, password }` **or** `{ epc }` (staff badge) | `Merchant/Login` | `200 { token, user: { name, login_id, merchant_id } }` |
+| GET | `/api/auth/me` | | `Merchant/AccessControl` | `200 { merchant_id, permissions: [1, 4, …] }` |
 | GET | `/api/stores` | | `Stock/StoreList` | `200 { stores: [{ id, name, raw }] }` |
 | POST | `/api/tags/lookup` | `{ epcs: [...] (≤200), store_id?, op_type? }` | `Stock/TagLookup` × n, max 5 in parallel | `200 { tags, unknown, failed }` |
 | GET | `/api/stock/balance` | `?sku=&store_id=` | `Stock/SkuBalance` | `200 { sku, store_id, store_name, balance }` |
 
 All except login need `Authorization: Bearer <token>` (the token from login).
+
+**The token** packs the user's team-API `SESSION` and their `MERCHANTID` (from the login response) into one
+base64url string, so every later call uses the right merchant. It isn't signed, and doesn't need to be:
+the team API checks the session on every call. Treat it like a password anyway.
+Permission ids from `/auth/me` aren't mapped to names yet. Ask the team what each id means.
 
 A tag in `tags` looks like:
 ```json

@@ -5,11 +5,13 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import express from 'express';
 import request from 'supertest';
+import { encodeToken, decodeToken } from '../src/services/integrations/altai-api/token.js';
 
 // ---------- fake upstream (behaves like the real API as seen in rfid_counter) ----------
 
 const FAKE_KEY = 'fake-test-key';
 const FAKE_SESSION = 'fake-session-1';
+const BADGE_EPC = 'E2BADAE001';
 const calls = [];
 let inFlight = 0;
 let maxInFlight = 0;
@@ -24,10 +26,15 @@ fake.use((req, res, next) => {
 });
 fake.post('/rest/Merchant/Login', (req, res) => {
     if (req.body.loginId === 'cashier1' && req.body.password === 'test-pass') {
-        return res.set('session', FAKE_SESSION).json({ ok: true });
+        return res.set('session', FAKE_SESSION).json({ name: 'Aina', merchantId: 42 });
     }
-    res.status(401).json({ error: 'Invalid' });
+    if (req.body.epc === BADGE_EPC) {
+        return res.set('session', FAKE_SESSION).json({ name: 'Badge User', merchantId: 42 });
+    }
+    // Like the real API: a failed login is still HTTP 200, with the error in the body.
+    res.json({ error: { message: 'Invalid credentials' } });
 });
+fake.get('/rest/Merchant/AccessControl', (req, res) => res.json({ data: [{ id: 1 }, { id: '4' }] }));
 fake.get('/rest/Stock/StoreList', (req, res) => res.json({ data: [{ id: 12, name: 'MidValley' }, { id: 13, name: 'Pavilion' }] }));
 fake.post('/rest/Stock/TagLookup', async (req, res) => {
     inFlight++; maxInFlight = Math.max(maxInFlight, inFlight);
@@ -47,7 +54,8 @@ fake.get('/rest/Stock/SkuBalance', (req, res) => {
 // ---------- start fake, point our config at it, then load our app ----------
 
 let fakeServer, api, config, db;
-const auth = { Authorization: `Bearer ${FAKE_SESSION}` };
+// The token our login returns: session + the merchant id from the login response (42, not .env's 7).
+const auth = { Authorization: `Bearer ${encodeToken({ session: FAKE_SESSION, merchantId: '42' })}` };
 
 before(async () => {
     fakeServer = fake.listen(0);
@@ -69,25 +77,49 @@ after(async () => {
 
 // ---------- tests ----------
 
-test('login returns the session token from the response header', async () => {
+test('login: token carries the session header + merchant id from the response; user name returned', async () => {
     const res = await api.post('/api/auth/login').send({ login_id: 'cashier1', password: 'test-pass' }).expect(200);
-    assert.equal(res.body.token, FAKE_SESSION);
+    assert.deepEqual(decodeToken(res.body.token), { session: FAKE_SESSION, merchantId: '42' });
+    assert.deepEqual(res.body.user, { name: 'Aina', login_id: 'cashier1', merchant_id: '42' });
 
     const sent = calls.findLast((c) => c.path === '/rest/Merchant/Login');
     assert.equal(sent.apikey, FAKE_KEY, 'API key sent to the team API');
-    assert.equal(sent.merchant, '7', 'merchant id from .env');
+    assert.equal(sent.merchant, '7', 'before login we only know the default merchant from .env');
 });
 
-test('wrong password → 401, and the API key never appears in our responses', async () => {
+test('later calls use the merchant id from login, not the .env default', async () => {
+    await api.get('/api/stores').set(auth).expect(200);
+    assert.equal(calls.findLast((c) => c.path === '/rest/Stock/StoreList').merchant, '42');
+});
+
+test('badge login with an EPC', async () => {
+    const res = await api.post('/api/auth/login').send({ epc: BADGE_EPC.toLowerCase() }).expect(200);
+    assert.equal(res.body.user.name, 'Badge User');
+    await api.post('/api/auth/login').send({ epc: 'E2FFFFFF99' }).expect(401);
+});
+
+test('wrong password (HTTP 200 + error body upstream) → 401, API key never leaks', async () => {
     const res = await api.post('/api/auth/login').send({ login_id: 'cashier1', password: 'wrong' }).expect(401);
     assert.equal(res.body.error, 'Invalid login ID or password');
     assert.ok(!JSON.stringify(res.body).includes(FAKE_KEY));
 });
 
-test('protected routes need a token; an expired session (440) becomes 401 SESSION_EXPIRED', async () => {
+test('login validation: empty fields, or password and badge mixed → 400', async () => {
+    await api.post('/api/auth/login').send({ login_id: '', password: '' }).expect(400);
+    await api.post('/api/auth/login').send({ login_id: 'a', password: 'b', epc: BADGE_EPC }).expect(400);
+});
+
+test('protected routes: no token / garbage token / expired session → 401', async () => {
     await api.get('/api/stores').expect(401);
-    const res = await api.get('/api/stores').set({ Authorization: 'Bearer old-session' }).expect(401);
+    await api.get('/api/stores').set({ Authorization: 'Bearer not-a-real-token' }).expect(401);
+    const expired = encodeToken({ session: 'old-session', merchantId: '42' });
+    const res = await api.get('/api/stores').set({ Authorization: `Bearer ${expired}` }).expect(401);
     assert.equal(res.body.details[0].code, 'SESSION_EXPIRED');
+});
+
+test('/auth/me returns merchant and permission ids', async () => {
+    const res = await api.get('/api/auth/me').set(auth).expect(200);
+    assert.deepEqual(res.body, { ok: true, merchant_id: '42', permissions: [1, 4] });
 });
 
 test('store list is mapped to { id, name }', async () => {

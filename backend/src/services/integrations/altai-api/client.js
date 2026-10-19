@@ -12,15 +12,17 @@ import HttpError from '../../../lib/httpError.js';
 
 export const SESSION_EXPIRED = 'SESSION_EXPIRED';
 
-export async function request({ method = 'GET', path, query, body, session }) {
-    const { baseUrl, apiKey, merchantId, timeoutMs } = config.altaiApi;
+// auth = { session, merchantId } of the logged-in user (from the token). Login itself has no auth yet,
+// so it falls back to the default merchant id from .env.
+export async function request({ method = 'GET', path, query, body, auth }) {
+    const { baseUrl, apiKey, merchantId: defaultMerchantId, timeoutMs } = config.altaiApi;
     if (!apiKey) throw new HttpError(503, 'Team API is not configured (ALTAI_API_KEY missing in .env)');
 
     const url = new URL(`${baseUrl}/${path}`);
     for (const [k, v] of Object.entries(query ?? {})) if (v != null) url.searchParams.set(k, v);
 
-    const headers = { APIKEY: apiKey, MERCHANTID: merchantId, Accept: 'application/json' };
-    if (session) headers.SESSION = session;
+    const headers = { APIKEY: apiKey, MERCHANTID: auth?.merchantId ?? defaultMerchantId, Accept: 'application/json' };
+    if (auth?.session) headers.SESSION = auth.session;
     if (body !== undefined) headers['Content-Type'] = 'application/json';
 
     let res;
@@ -56,7 +58,13 @@ export function expectOk({ status, data }, path, { errorStatus = 422 } = {}) {
         throw new HttpError(502, `Team API error (${path}, status ${status})`);
     }
     if (data && typeof data === 'object' && 'error' in data) {
-        throw new HttpError(errorStatus, String(data.error));
+        throw new HttpError(errorStatus, errorMessage(data.error));
     }
     return data;
+}
+
+// Their error is sometimes a string, sometimes { message: "..." }.
+export function errorMessage(error) {
+    if (typeof error === 'string') return error;
+    return error?.message ? String(error.message) : 'Team API reported an error';
 }
