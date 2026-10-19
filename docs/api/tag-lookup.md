@@ -1,11 +1,23 @@
-# Tag-lookup API (from the other dev team)
+# Team API: what we know so far
 
-Fill this in after talking to the team.
+Learned from the rfid_counter app's `api_service.dart` (2026-10-19). Still to confirm with the team's docs.
 
-- **Base URL / environments:**
-- **Auth:** (API key? token? who issues it?) Never paste real keys here.
-- **Input:** EPC? barcode? SKU?
-- **Output:** (paste an example response with fake data)
-- **Source of truth:** Who owns product master data: their system or ALTAI-POS?
-- **Failure behaviour:** What should the till do when this API is down or slow?
-- **Rate limits / timeouts:**
+- **Base URL:** `https://altairfid.com/rest` (production). Test server: _unknown, ask_
+- **Auth:** header `APIKEY` (app key) + `MERCHANTID` + `SESSION` (from `Merchant/Login`, returned as a response header). Never paste real keys here.
+- **Session expired:** HTTP **440**. One active session per login.
+- **Errors:** may come back as HTTP 200 with `{ "error": "…" }`.
+- **Input for lookup:** one EPC per `Stock/TagLookup` call. The rfid_counter app limits itself to 5 in parallel.
+- **Output:** see `altai-adapter.md`. No price is returned.
+- **Source of truth:** their API for stock/tags/stores/users (decision 004). Prices and sales: _open_.
+
+## Endpoints seen in the rfid_counter app
+
+| Area | Endpoints | Used by our adapter |
+|---|---|---|
+| Auth | `Merchant/Login`, `Merchant/AccessControl` | Login ✅ |
+| Stores | `Stock/StoreList` | ✅ |
+| Tags | `Stock/TagLookup`, `Stock/EpcList`, `Stock/UpdateTag` | TagLookup ✅ |
+| Balance | `Stock/SkuBalance` | ✅ |
+| Adjustments | `Stock/Adjustment`, `…List`, `…Info`, `…Void`, `…ApproveScan`, `…ApproveNoScan` | not yet |
+| Transfers | `Stock/Transfer`, `…List`, `…Info`, `…Approve`, `…ApproveScan` (unconfirmed) | not yet |
+| Stock count | `Stock/StockCount`, `…List`, `…Info`, `…Approve` | not yet |

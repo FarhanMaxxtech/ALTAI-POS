@@ -13,6 +13,13 @@ const config = {
         // No default on purpose: a missing password should fail loudly, not silently.
         password: process.env.DB_PASSWORD,
     },
+    // The team's RFID / stock API. The key stays on this server and is never sent to the apps.
+    altaiApi: {
+        baseUrl: (process.env.ALTAI_API_BASE_URL ?? 'https://altairfid.com/rest').replace(/\/+$/, ''),
+        apiKey: process.env.ALTAI_API_KEY || null, // || on purpose: an empty value counts as "not set"
+        merchantId: process.env.ALTAI_MERCHANT_ID ?? '1',
+        timeoutMs: Number(process.env.ALTAI_API_TIMEOUT_MS ?? 8000),
+    },
 };
 
 export default config;
