@@ -1,5 +1,11 @@
 import knex from 'knex';
+import pg from 'pg';
 import knexConfig from '../../knexfile.js';
+
+// PostgreSQL BIGINT (type id 20: our ids, count(*)) arrives as a string by default, because it can
+// exceed JavaScript's safe integer range (2^53). Our ids never will, so parse them as numbers.
+// NUMERIC (money) is deliberately left as a string. See product.service.js.
+pg.types.setTypeParser(20, (value) => Number.parseInt(value, 10));
 
 // One shared connection pool for the whole app. Import `db` wherever you need the database.
 const db = knex(knexConfig);

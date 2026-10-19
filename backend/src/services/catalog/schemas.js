@@ -1,22 +1,7 @@
 import { z } from 'zod';
+import { money, code, optionalText, id, status, idParamSchema } from '../../lib/validators.js';
 
-// Request bodies use z.strictObject: an unknown field (a typo, or "sku" on an update) is a 400,
-// not silently ignored.
-
-// ---------- building blocks ----------
-
-// Money arrives as 49.9 or "49.90"; we keep it as a string so it never passes through a float.
-const money = z
-    .union([z.number(), z.string().trim()])
-    .transform(String)
-    .pipe(z.string().regex(/^\d{1,10}(\.\d{1,2})?$/, 'Must be an amount like 49.90 (max 2 decimals)'));
-
-// Codes are compared case-insensitively, so store them upper-case: "ct-001" → "CT-001".
-const code = (max) => z.string().trim().min(1).max(max).regex(/^[A-Za-z0-9._-]+$/, 'Only letters, digits, . _ -').toUpperCase();
-
-const optionalText = (max) => z.string().trim().max(max).nullish().transform((v) => v || null);
-const id = z.coerce.number().int().positive();
-const status = z.enum(['active', 'archived']);
+export { idParamSchema };
 
 // ---------- categories ----------
 
@@ -67,7 +52,6 @@ export const listProductsQuerySchema = z.object({
     offset: z.coerce.number().int().min(0).default(0),
 });
 
-export const idParamSchema = z.object({ id });
 
 export const lookupQuerySchema = z.object({
     code: z.string().trim().min(1).max(64),
