@@ -2,6 +2,7 @@ import express from 'express';
 import notFound from './middleware/notFound.js';
 import errorHandler from './middleware/errorHandler.js';
 import { checkDb } from './db/index.js';
+import apiRoutes from './routes/index.js';
 
 const app = express();
 
@@ -19,6 +20,8 @@ app.get('/health', async (req, res) => {
         time: new Date().toISOString(),
     });
 });
+
+app.use('/api', apiRoutes);
 
 // 3) Safety nets: order matters, these must stay last
 app.use(notFound);

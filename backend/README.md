@@ -32,4 +32,27 @@ Rule: if two controllers need the same calculation, it belongs in `services/`, w
 
 ## Setup
 
-_Not set up yet._ `npm init` and Express come next.
+Needs Node.js 22+ and PostgreSQL 15+ (we use 18).
+
+1. Create the database role and database once (as the `postgres` admin, in `psql -U postgres`):
+   ```sql
+   CREATE ROLE altai_app LOGIN PASSWORD 'choose-a-password';
+   CREATE DATABASE altai_pos_dev OWNER altai_app;
+   ```
+2. Copy `.env.example` to `.env` and set `DB_PASSWORD`.
+3. Install and migrate:
+   ```
+   npm install
+   npm run migrate
+   ```
+4. Run: `npm run dev` → check `http://localhost:3001/health` says `"database": "connected"`.
+
+| Script | Does |
+|---|---|
+| `npm run dev` | Start with auto-restart on save |
+| `npm test` | Run all tests (uses the dev DB, cleans up after itself) |
+| `npm run migrate` | Apply new migrations |
+| `npm run migrate:rollback` | Undo the last batch of migrations |
+| `npm run migrate:make <name>` | Create a new migration file |
+
+API reference: `docs/api/`. Domain rules: `docs/domain/`.
