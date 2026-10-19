@@ -1,0 +1,33 @@
+# Secrets / environment
+.env
+.env.*
+!.env.example
+*.env
+!*.env.example
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.iml
+
+# Node / JavaScript (backend + admin-web)
+node_modules/
+dist/
+coverage/
+*.log
+npm-debug.log*
+*.sqlite
+*.db
+
+# POS app (Flutter)
+pos-app/build/
+pos-app/.dart_tool/
+pos-app/.flutter-plugins
+pos-app/.flutter-plugins-dependencies
+pos-app/android/.gradle/
+pos-app/android/local.properties
+pos-app/ios/Pods/
+pos-app/ios/Flutter/ephemeral/
+pos-app/windows/flutter/ephemeral/
