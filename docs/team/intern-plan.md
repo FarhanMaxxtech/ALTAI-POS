@@ -60,8 +60,8 @@ Write everything into **`docs/domain/retail-pos-features.md`**, with links to yo
 ## Week 1: first code task (store settings page, read-only)
 
 - [ ] Create a branch: `intern/store-settings-page`
-- [ ] Add a page at `/settings` in `src/features/settings/SettingsPage.jsx`
-- [ ] Add a link to it in the top bar (`src/components/AppShell.jsx`)
+- [ ] Build the page in `src/features/settings/SettingsPage.jsx`
+- [ ] Switch it on: in `src/navigation.js` set the Settings item to `status: 'ready', page: 'settings'`, and add `settings: SettingsPage` to `pages` in `src/App.jsx`. The sidebar link already exists
 - [ ] Show the store's name, address, tax setting and receipt footer
   - The backend endpoint doesn't exist yet. Use the example response in `docs/api/prices-tax.md` (the lead writes it) as temporary data
 - [ ] Handle the three states, like `HomePage.jsx` does:
