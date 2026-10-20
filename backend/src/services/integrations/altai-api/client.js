@@ -46,7 +46,25 @@ export async function request({ method = 'GET', path, query, body, auth }) {
     let data = null;
     try { data = text ? JSON.parse(text) : null; } catch { data = null; }
 
+    if (res.ok) logShapeOnce(path, data);
     return { status: res.status, headers: res.headers, data };
+}
+
+// Development aid while the team's API docs are missing: log the FIELD NAMES (never the values)
+// of the first successful response from each endpoint, so we can confirm our mappings.
+// Lists are described by their first item. Remove once the docs/Postman collection arrive.
+const loggedShapes = new Set();
+function logShapeOnce(path, data) {
+    if (config.env !== 'development' || loggedShapes.has(path) || data == null) return;
+    loggedShapes.add(path);
+    const describe = (v, depth = 0) => {
+        if (Array.isArray(v)) return v.length ? [describe(v[0], depth + 1)] : [];
+        if (v && typeof v === 'object' && depth < 3) {
+            return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, describe(x, depth + 1)]));
+        }
+        return v === null ? 'null' : typeof v;
+    };
+    console.info(`[team API shape] ${path}:`, JSON.stringify(describe(data)));
 }
 
 // For normal calls: anything other than 2xx, or a body with "error", becomes an HttpError.
