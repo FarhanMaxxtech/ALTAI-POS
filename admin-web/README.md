@@ -10,7 +10,7 @@ Back-office site for owners and managers: catalog setup, inventory, reports. It 
 | `src/features/auth/` | Login page (ID + password, or staff badge), `AuthContext` (who is logged in), `RequireAuth` (route guard) |
 | `src/features/home/` | Dashboard: welcome, store count, pages coming next |
 | `src/features/stores/` | Store list (from the team API) |
-| `src/features/catalog/` | Products, variants, SKUs, barcodes (not built yet) |
+| `src/features/catalog/` | **Products page**: scan/paste RFID tags → products grouped by SKU (team API `Stock/TagLookup`). `epc.js` = tag-code helpers, tested in `epc.test.js` |
 | `src/features/inventory/` | Stock levels, transfers, counts (not built yet) |
 | `src/features/reports/` | Sales and stock reports (not built yet) |
 
@@ -30,6 +30,10 @@ Built with **Vite + React 19 + React Router**. Plain CSS in `src/index.css` (col
    npm install
    npm run dev
    ```
+3. Tests (helper functions): `npm test`
+
+Backend on a different port? Set `API_PROXY_TARGET` before starting, e.g. in PowerShell:
+`$env:API_PROXY_TARGET='http://localhost:3002'; npm run dev`
 3. Open `http://localhost:5173`.
 
 In development, Vite forwards every `/api/...` request to `http://localhost:3001` (see `vite.config.js`).

@@ -4,12 +4,14 @@ import ComingSoon from './components/ComingSoon.jsx';
 import LoginPage from './features/auth/LoginPage.jsx';
 import RequireAuth from './features/auth/RequireAuth.jsx';
 import HomePage from './features/home/HomePage.jsx';
+import ProductsPage from './features/catalog/ProductsPage.jsx';
 import StoresPage from './features/stores/StoresPage.jsx';
 import { allNavItems } from './navigation.js';
 
 // Built pages, by the `page` key used in navigation.js.
 const pages = {
     home: HomePage,
+    products: ProductsPage,
     stores: StoresPage,
 };
 

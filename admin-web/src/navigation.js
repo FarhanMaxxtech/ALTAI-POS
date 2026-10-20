@@ -37,8 +37,8 @@ export const navigation = [
     {
         title: 'Catalog',
         items: [
-            { path: '/products', label: 'Products', icon: 'shirt', status: 'planned', phase: 'Phase 1', source: 'Team API',
-                summary: 'Styles and their variants (size × colour) with SKU and barcode.' },
+            { path: '/products', label: 'Products', icon: 'shirt', status: 'ready', page: 'products', source: 'Team API',
+                summary: 'Scan or paste RFID tags to see which products, SKUs and stores they belong to.' },
             { path: '/prices', label: 'Prices', icon: 'tag', status: 'planned', phase: 'Phase 1', source: 'ALTAI backend',
                 summary: 'Set the selling price per SKU and per store, and update a whole style at once.' },
             { path: '/categories', label: 'Categories', icon: 'folder', status: 'planned', phase: 'Phase 1', source: 'Team API',
@@ -57,7 +57,7 @@ export const navigation = [
             { path: '/stock-counts', label: 'Stock counts', icon: 'clipboard', status: 'planned', phase: 'Phase 2', source: 'Team API',
                 summary: 'Stock takes and their differences between counted and expected stock.' },
             { path: '/rfid', label: 'RFID tags', icon: 'signal', status: 'planned', phase: 'Phase 1', source: 'Team API',
-                summary: 'Look up tags by EPC: which item, which store, and its status.' },
+                summary: 'Manage tags: assign new tags to a SKU, and mark tags as missing, sold or retired.' },
         ],
     },
     {

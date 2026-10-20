@@ -8,8 +8,9 @@ export default defineConfig({
         port: 5173,
         // In development, the browser calls /api/... on this dev server, and Vite forwards it to the
         // backend. Same origin for the browser = no CORS setup needed.
+        // Backend on another port? Start with API_PROXY_TARGET=http://localhost:<port> npm run dev
         proxy: {
-            '/api': 'http://localhost:3001',
+            '/api': process.env.API_PROXY_TARGET ?? 'http://localhost:3001',
         },
     },
 });
