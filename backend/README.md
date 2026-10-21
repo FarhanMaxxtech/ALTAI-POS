@@ -29,7 +29,7 @@ HTTP request
 | `src/services/customers/` | Customers (by phone), consent history, erasure; promotional campaigns |
 | `src/services/messaging/` | The only code that would send a message to a customer (preview mode for now) |
 | `src/lib/` | Small shared helpers: `money.js` (all cash maths in whole cents), `phone.js` (one standard phone format), `tax.js` (SST + 5-sen cash rounding), validators, errors |
-| `src/services/integrations/altai-api/` | The **only** code that calls the team's API (login, stores, tags, stock balance) |
+| `src/services/integrations/altai-api/` | The **only** code that calls the team's API (login, stores, tags, stock balance, read-only stock views) |
 | `src/db/` | Database connection and migrations (ORM choice: see `docs/decisions/`) |
 | `tests/` | Automated tests, from day one |
 

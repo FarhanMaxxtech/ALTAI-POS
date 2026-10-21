@@ -8,6 +8,8 @@ import CustomersPage from './features/customers/CustomersPage.jsx';
 import HomePage from './features/home/HomePage.jsx';
 import ProductsPage from './features/catalog/ProductsPage.jsx';
 import PricesPage from './features/pricing/PricesPage.jsx';
+import StockLevelsPage from './features/inventory/StockLevelsPage.jsx';
+import { AdjustmentsPage, StockCountsPage, TransfersPage } from './features/inventory/TransactionsPage.jsx';
 import SettingsPage from './features/settings/SettingsPage.jsx';
 import ShiftsPage from './features/shifts/ShiftsPage.jsx';
 import StoresPage from './features/stores/StoresPage.jsx';
@@ -22,7 +24,11 @@ const pages = {
     products: ProductsPage,
     settings: SettingsPage,
     shifts: ShiftsPage,
+    stockCounts: StockCountsPage,
+    stockLevels: StockLevelsPage,
     stores: StoresPage,
+    transfers: TransfersPage,
+    adjustments: AdjustmentsPage,
 };
 
 // Every URL of the admin site. The routes are generated from navigation.js, so every menu item

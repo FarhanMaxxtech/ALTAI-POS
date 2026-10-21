@@ -16,8 +16,8 @@ Learned from the rfid_counter app's `api_service.dart` (2026-10-19). Still to co
 |---|---|---|
 | Auth | `Merchant/Login`, `Merchant/AccessControl` | Login ✅ |
 | Stores | `Stock/StoreList` | ✅ |
-| Tags | `Stock/TagLookup`, `Stock/EpcList`, `Stock/UpdateTag` | TagLookup ✅ |
+| Tags | `Stock/TagLookup`, `Stock/EpcList`, `Stock/UpdateTag` | TagLookup ✅, EpcList ✅ (stock levels) |
 | Balance | `Stock/SkuBalance` | ✅ |
-| Adjustments | `Stock/Adjustment`, `…List`, `…Info`, `…Void`, `…ApproveScan`, `…ApproveNoScan` | not yet |
-| Transfers | `Stock/Transfer`, `…List`, `…Info`, `…Approve`, `…ApproveScan` (unconfirmed) | not yet |
-| Stock count | `Stock/StockCount`, `…List`, `…Info`, `…Approve` | not yet |
+| Adjustments | `Stock/Adjustment`, `…List`, `…Info`, `…Void`, `…ApproveScan`, `…ApproveNoScan` | List + Info ✅ (view only) |
+| Transfers | `Stock/Transfer`, `…List`, `…Info`, `…Approve`, `…ApproveScan` (unconfirmed) | List + Info ✅ (view only) |
+| Stock count | `Stock/StockCount`, `…List`, `…Info`, `…Approve` | List + Info ✅ (view only) |

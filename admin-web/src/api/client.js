@@ -26,6 +26,13 @@ export class ApiError extends Error {
     get sessionExpired() {
         return this.status === 401;
     }
+
+    // The most useful text to show a person: the specific reasons when the server sent them
+    // (e.g. '"from" must be on or before "to"'), otherwise the general message.
+    get readable() {
+        const reasons = this.details.map((d) => d.message).filter(Boolean);
+        return reasons.length ? reasons.join(' · ') : this.message;
+    }
 }
 
 // Set by AuthContext: what to do when the backend says the session is no longer valid.

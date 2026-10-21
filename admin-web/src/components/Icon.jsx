@@ -20,6 +20,7 @@ const paths = {
     settings: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9L7 7M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1',
     megaphone: 'M3 10v4h3l7 5V5L6 10zM16 9a4 4 0 0 1 0 6M19 6.5a8 8 0 0 1 0 11',
     menu: 'M4 6h16M4 12h16M4 18h16',
+    sliders: 'M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0M14 4v4M8 10v4M16 16v4',
     close: 'M6 6l12 12M18 6L6 18',
     logout: 'M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10',
 };
