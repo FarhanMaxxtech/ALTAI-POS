@@ -5,7 +5,7 @@ import * as c from '../controllers/altai.controller.js';
 import * as s from '../controllers/stock.controller.js';
 import { loginSchema, tagLookupSchema, skuBalanceQuerySchema } from '../services/integrations/altai-api/schemas.js';
 import {
-    stockLevelsQuerySchema, skuTagsQuerySchema, kindParamSchema, kindIdParamSchema, transactionsQuerySchema,
+    stockLevelsQuerySchema, skuTagsQuerySchema, kindParamSchema, kindIdParamSchema, transactionsQuerySchema, inspectSchema,
 } from '../services/integrations/altai-api/stock.schemas.js';
 
 // Routes backed by the team's API (altairfid). See docs/api/altai-adapter.md.
@@ -20,7 +20,8 @@ router.get('/stock/balance', requireSession, validate({ query: skuBalanceQuerySc
 
 // Read-only inventory views (decision 006): nothing here changes stock in the team's system.
 router.get('/stock/levels', requireSession, validate({ query: stockLevelsQuerySchema }), s.levels);
-router.get('/stock/tags', requireSession, validate({ query: skuTagsQuerySchema }), s.skuTags);
+router.get('/stock/tags', requireSession, validate({ query: skuTagsQuerySchema }), s.storeTags);
+router.post('/tags/inspect', requireSession, validate({ body: inspectSchema }), s.inspect);
 router.get('/stock/:kind', requireSession, validate({ params: kindParamSchema, query: transactionsQuerySchema }), s.transactions);
 router.get('/stock/:kind/:id', requireSession, validate({ params: kindIdParamSchema }), s.transaction);
 

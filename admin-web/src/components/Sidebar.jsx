@@ -1,6 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import { navigation } from '../navigation.js';
-import { useAuth } from '../features/auth/AuthContext.jsx';
+import { useAuth } from '../features/auth/useAuth.js';
 import Icon from './Icon.jsx';
 
 // The left menu. Items come from navigation.js; NavLink adds the "active" class to the current page.

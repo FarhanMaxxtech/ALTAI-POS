@@ -6,7 +6,8 @@ that the user may see the store. Nothing here changes stock (decision 006).
 | Method | Path | Query | Success |
 |---|---|---|---|
 | GET | `/stock/levels` | `store_id`, `q?` (SKU, product, product code), `refresh=1?` (skip the 60 s cache) | `200 { as_of, from_cache, complete, tag_count, reported_total, statuses, skus: [{ sku, product_name, product_code, variation, total, by_status }] }` |
-| GET | `/stock/tags` | `store_id`, `sku` | `200 { tags: [{ epc, sku, product_name, variation, status, store_id }] }` |
+| GET | `/stock/tags` | `store_id` and either `sku` (that SKU's tags) or `q` (≥2 chars: part of EPC, SKU or product name) | `sku`: `200 { tags }` · `q`: `200 { total, tags }` (max 500 shown) |
+| POST | `/tags/inspect` | body `{ epcs: [...] }` (≤50) | `200 { tags: [...] }` in the order sent, see below |
 | GET | `/stock/transfers` | `store_id`, `from?`, `to?` (YYYY-MM-DD, default last 30 days, max 92 days), `status?` | `200 { from, to, transactions }` |
 | GET | `/stock/transfers/:id` | | `200 { transaction }` (with `lines`) |
 | GET | `/stock/counts` · `/stock/counts/:id` | same as transfers | same |
@@ -15,6 +16,14 @@ that the user may see the store. Nothing here changes stock (decision 006).
 A `transaction` is `{ id, reference, date, type, status, store_name, to_store_name, quantity, remark, created_by, raw }`.
 `raw` is exactly what the team's API sent. The other fields are our best mapping of it.
 A `line` is `{ epc, sku, product_name, variation, quantity, status }`.
+
+**Tag inspector** (`/tags/inspect`): each tag is one of
+- `{ epc, found: true, sku, product_name, product_code, variation, store_id, store_name, status, pending_transaction, pending_transaction_id }`.
+  `status` comes from a small `EpcList` query in the tag's store, and `pending_transaction_id` is the unfinished transfer/count/adjustment holding it (field name unconfirmed).
+- `{ epc, found: false }`: not registered to any product.
+- `{ epc, found: null, error }`: the lookup itself failed (e.g. the team API was too slow).
+
+The team's API can only **assign** tags to a SKU (`Stock/UpdateTag`, done in their handheld app). There's no endpoint to mark a tag missing, sold or retired.
 
 `complete: false` means the store has more than 10,000 tags and only the first 10,000 were counted.
 

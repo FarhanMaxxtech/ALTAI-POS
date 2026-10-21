@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from './AuthContext.jsx';
+import { useAuth } from './useAuth.js';
 
 // Wrap any page that needs a logged-in user. Not logged in → go to /login,
 // remembering where they wanted to go so we can send them back after login.

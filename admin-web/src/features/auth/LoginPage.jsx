@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext.jsx';
+import { useAuth } from './useAuth.js';
 
 export default function LoginPage() {
     const { status, signIn, notice } = useAuth();

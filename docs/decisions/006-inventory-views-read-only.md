@@ -14,6 +14,7 @@ Creating, approving and voiding them stays in the team's own website and the RFI
 
 ## How it works
 - **Stock levels** = every tagged item in a store from `Stock/EpcList` (paged, 200 per page, up to 10,000 per store), counted per SKU and split by the tag's status in their system. The list is cached for 60 seconds per store; "Refresh" fetches it again.
+- **RFID tags** = a read-only inspector (TagLookup + a small EpcList query per tag for its status) and a search across a store's cached tag list. Assigning tags (`Stock/UpdateTag`) stays in the handheld app; their API has no way to mark tags missing/sold.
 - **Transfers / counts / adjustments** = `Stock/TransferList|StockCountList|AdjustmentList` and their `…Info` endpoints. Their field names aren't documented, so the backend maps the likely names and also returns the original record (`raw`).
 
 ## To revisit when

@@ -69,6 +69,11 @@ function mapTag(epc, d) {
         store_id: (d.currentStoreId ?? d.storeId)?.toString() ?? null, // unconfirmed field name
         store_name: d.storeName ?? null,
         pending_transaction: Boolean(d.isPendingTransaction ?? d.isPending ?? d.pending ?? false),
+        // Which unfinished transfer/count/adjustment holds this tag (names unconfirmed; the rfid_counter
+        // app tries the same three).
+        pending_transaction_id: (d.pendingTrxId ?? d.pendingTransactionId
+            ?? (d.pendingTransaction && typeof d.pendingTransaction === 'object' ? (d.pendingTransaction.trxId ?? d.pendingTransaction.id) : null))
+            ?.toString() ?? null,
     };
 }
 

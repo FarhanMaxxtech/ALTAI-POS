@@ -11,9 +11,17 @@ export const stockLevelsQuerySchema = z.object({
     refresh: z.enum(['1', 'true']).optional(), // skip the 60-second cache
 });
 
+// Either the tags of one SKU (sku=…), or a search (q=… matches part of EPC, SKU or product name).
 export const skuTagsQuerySchema = z.object({
     store_id: storeId,
-    sku: z.string().trim().min(1).max(64),
+    sku: z.string().trim().min(1).max(64).optional(),
+    q: z.string().trim().min(2, 'Type at least 2 characters').max(64).optional(),
+}).refine((v) => Boolean(v.sku) !== Boolean(v.q), { message: 'Send either sku or q', path: ['q'] });
+
+const epc = z.string().trim().regex(/^[0-9A-Fa-f]{8,64}$/, 'EPC must be 8-64 hex characters').toUpperCase();
+export const inspectSchema = z.strictObject({
+    // At most 50: each tag costs one or two calls to the team's API.
+    epcs: z.array(epc).min(1).max(50).refine((l) => new Set(l).size === l.length, 'Duplicate EPC in list'),
 });
 
 export const kindParamSchema = z.object({ kind: z.enum(['transfers', 'counts', 'adjustments']) });

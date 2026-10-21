@@ -58,8 +58,8 @@ export const navigation = [
                 summary: 'Stock takes done with the RFID handheld, and their result (view only).' },
             { path: '/adjustments', label: 'Adjustments', icon: 'sliders', status: 'ready', page: 'adjustments', source: 'Team API',
                 summary: 'Corrections to stock, e.g. damaged, lost or found items (view only).' },
-            { path: '/rfid', label: 'RFID tags', icon: 'signal', status: 'planned', phase: 'Phase 1', source: 'Team API',
-                summary: 'Manage tags: assign new tags to a SKU, and mark tags as missing, sold or retired.' },
+            { path: '/rfid', label: 'RFID tags', icon: 'signal', status: 'ready', page: 'rfidTags', source: 'Team API',
+                summary: 'Inspect tags (what, where, status, pending transactions) and search a store\'s tags (view only).' },
         ],
     },
     {

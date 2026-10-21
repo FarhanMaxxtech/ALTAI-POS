@@ -1,5 +1,6 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { api, setUnauthorizedHandler, tokenStore } from '../../api/client.js';
+import { AuthContext } from './useAuth.js';
 
 // Who is logged in, shared with every page through React context.
 //
@@ -11,7 +12,6 @@ import { api, setUnauthorizedHandler, tokenStore } from '../../api/client.js';
 // The token is the only proof of login. The user's name is cached next to it for display only.
 
 const USER_KEY = 'altai.user';
-const AuthContext = createContext(null);
 
 function readCachedUser() {
     try { return JSON.parse(sessionStorage.getItem(USER_KEY)); } catch { return null; }
@@ -81,10 +81,4 @@ export function AuthProvider({ children }) {
         [status, user, permissions, notice, signIn, signOut],
     );
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-    const ctx = useContext(AuthContext);
-    if (!ctx) throw new Error('useAuth() must be used inside <AuthProvider>');
-    return ctx;
 }

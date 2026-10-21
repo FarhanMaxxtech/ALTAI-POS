@@ -28,12 +28,23 @@ fake.use((req, res, next) => {
 });
 fake.get('/rest/Stock/StoreList', (req, res) => res.json({ data: [{ id: 12, name: 'MidValley' }, { id: 13, name: 'Pavilion' }, { id: 14, name: 'Mega Warehouse' }] }));
 fake.post('/rest/Stock/EpcList', (req, res) => {
-    const { storeId, page, pageSize } = req.body;
+    const { storeId, page, pageSize, epc } = req.body;
+    if (epc) { // filtered by EPC (partial match, like a search)
+        const rows = store12.filter((t) => storeId === '12' && t.epc.toUpperCase().includes(epc.toUpperCase()));
+        return res.json({ recordsTotal: rows.length, data: rows.slice(0, pageSize) });
+    }
     if (storeId === '14') {
         return res.json({ recordsTotal: 20000, data: Array.from({ length: pageSize }, (_, i) => ({ epc: `AA${page}${i}`, sku: 'BULK', status: 'IN', storeId: 14 })) });
     }
     const all = storeId === '12' ? store12 : [];
     res.json({ recordsTotal: all.length, data: all.slice((page - 1) * pageSize, page * pageSize) });
+});
+fake.post('/rest/Stock/TagLookup', (req, res) => {
+    const tag = store12.find((t) => t.epc.toUpperCase() === req.body.epc);
+    if (!tag) return res.json({ error: { message: 'Tag not found' } });
+    const pending = tag.epc.endsWith('01');
+    res.json({ productName: tag.productName, sku: tag.sku, productCode: tag.productCode, varLabel: tag.varLabel,
+        varDetails: [], storeId: 12, storeName: 'MidValley', isPendingTransaction: pending, ...(pending ? { pendingTrxId: 'TRF-0042' } : {}) });
 });
 fake.get('/rest/Stock/TransferList', (req, res) => res.json({ data: [
     { trxId: 'TR-1', trxDate: '2026-10-20', status: 'pending', fromStoreName: 'MidValley', toStoreName: 'Pavilion', totalQty: 5, remark: 'Restock' },
@@ -137,6 +148,41 @@ test('stock counts and adjustments: other names for the same things', async () =
 
     const adj = await api.get('/api/stock/adjustments').set(auth).query({ store_id: '12' }).expect(200);
     assert.deepEqual([adj.body.transactions[0].type, adj.body.transactions[0].status, adj.body.transactions[0].quantity], ['damaged', 'void', 2]);
+});
+
+test('tag inspector: what, where, status there, pending transaction; order kept; unknown flagged', async () => {
+    const sold = store12[0].epc.toUpperCase();     // i = 0 → SOLD
+    const pending = store12[1].epc.toUpperCase();  // ends in 01 → in a pending transfer
+    const unknown = '0000AAAA1111';
+    const res = await api.post('/api/tags/inspect').set(auth).send({ epcs: [pending, unknown, sold.toLowerCase()] }).expect(200);
+    const [a, b, c] = res.body.tags;
+
+    assert.deepEqual(
+        (({ epc, found, sku, store_name, status, pending_transaction, pending_transaction_id }) => ({ epc, found, sku, store_name, status, pending_transaction, pending_transaction_id }))(a),
+        { epc: pending, found: true, sku: 'CT-BLK-L', store_name: 'MidValley', status: 'IN', pending_transaction: true, pending_transaction_id: 'TRF-0042' },
+    );
+    assert.deepEqual(b, { epc: unknown, found: false });
+    assert.deepEqual([c.epc, c.status, c.pending_transaction], [sold, 'SOLD', false]);
+
+    const statusCalls = calls.filter((x) => x.path === '/rest/Stock/EpcList' && x.body?.epc);
+    assert.ok(statusCalls.length >= 2 && statusCalls.every((x) => x.body.pageSize === 10), 'small targeted status queries, not the whole store');
+});
+
+test('tag inspector: limits', async () => {
+    const many = Array.from({ length: 51 }, (_, i) => `E280${String(i).padStart(8, '0')}`);
+    await api.post('/api/tags/inspect').set(auth).send({ epcs: many }).expect(400);
+    await api.post('/api/tags/inspect').set(auth).send({ epcs: ['E2801160AA', 'e2801160aa'] }).expect(400);
+});
+
+test("search a store's tags by part of an EPC, SKU or product", async () => {
+    const byProduct = await api.get('/api/stock/tags').set(auth).query({ store_id: '12', q: 'linen' }).expect(200);
+    assert.deepEqual([byProduct.body.total, byProduct.body.tags.length], [150, 150]);
+    const byEpc = await api.get('/api/stock/tags').set(auth).query({ store_id: '12', q: '00000449' }).expect(200);
+    assert.deepEqual(byEpc.body.tags.map((t) => t.epc), ['E280116000000449']);
+
+    await api.get('/api/stock/tags').set(auth).query({ store_id: '12', q: 'x' }).expect(400);
+    await api.get('/api/stock/tags').set(auth).query({ store_id: '12', q: 'linen', sku: 'LS-NVY-S' }).expect(400);
+    await api.get('/api/stock/tags').set(auth).query({ store_id: '12' }).expect(400);
 });
 
 test('refused: bad dates, too long a range, unknown kind, store without access, no token', async () => {

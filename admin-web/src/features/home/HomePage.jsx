@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import { allNavItems } from '../../navigation.js';
-import { useAuth } from '../auth/AuthContext.jsx';
+import { useAuth } from '../auth/useAuth.js';
 
 // Dashboard. For now: who you are, how many stores you can reach, and which pages are coming.
 // Real sales figures arrive with the checkout phase. We don't show made-up numbers before that.

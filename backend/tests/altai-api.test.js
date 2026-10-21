@@ -166,7 +166,7 @@ test('tag lookup: batch of EPCs → found / unknown / failed, max 5 in parallel'
     assert.deepEqual(res.body.tags[0], {
         epc: known[0], sku: 'CT-BLK-M', product_name: 'Classic Tee', product_code: 'CT', variation: 'Black / M',
         variation_details: [{ typeName: 'Colour', value: 'Black' }], store_id: '12', store_name: 'MidValley',
-        pending_transaction: false,
+        pending_transaction: false, pending_transaction_id: null,
     });
     assert.deepEqual(res.body.unknown, [unknown], '200 + { error } is treated as "not found"');
     assert.equal(res.body.failed.length, 1, 'the slow tag timed out, the rest still came back');

@@ -8,6 +8,7 @@ import CustomersPage from './features/customers/CustomersPage.jsx';
 import HomePage from './features/home/HomePage.jsx';
 import ProductsPage from './features/catalog/ProductsPage.jsx';
 import PricesPage from './features/pricing/PricesPage.jsx';
+import RfidTagsPage from './features/inventory/RfidTagsPage.jsx';
 import StockLevelsPage from './features/inventory/StockLevelsPage.jsx';
 import { AdjustmentsPage, StockCountsPage, TransfersPage } from './features/inventory/TransactionsPage.jsx';
 import SettingsPage from './features/settings/SettingsPage.jsx';
@@ -22,6 +23,7 @@ const pages = {
     home: HomePage,
     prices: PricesPage,
     products: ProductsPage,
+    rfidTags: RfidTagsPage,
     settings: SettingsPage,
     shifts: ShiftsPage,
     stockCounts: StockCountsPage,

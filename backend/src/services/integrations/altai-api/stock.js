@@ -102,6 +102,59 @@ export async function skuTags(auth, storeId, sku) {
     return tags.filter((t) => t.sku === sku);
 }
 
+// Search a store's tags by part of the EPC, the SKU or the product name (from the cached list).
+// Returns at most `limit` tags, plus how many matched in total.
+export async function searchStoreTags(auth, storeId, q, { limit = 500 } = {}) {
+    const { tags } = await storeTags(auth, storeId);
+    const needle = q.trim().toLowerCase();
+    const matches = tags.filter((t) => [t.epc, t.sku, t.product_name].some((v) => v?.toLowerCase().includes(needle)));
+    return { total: matches.length, tags: matches.slice(0, limit) };
+}
+
+// ---------- tag inspector ----------
+
+// The status of ONE tag in its store, with a small targeted query (EpcList filtered by EPC)
+// instead of downloading the whole store. null when the team's API doesn't list it there.
+async function tagStatus(auth, storeId, epc) {
+    const data = expectOk(
+        await request({ method: 'POST', path: 'Stock/EpcList', auth, body: { epc, productName: '', storeId, page: 1, pageSize: 10 } }),
+        'Stock/EpcList',
+    );
+    // The filter may match partially, so pick the exact EPC.
+    const row = (data?.data ?? []).map(mapEpcRow).find((r) => r.epc === epc.toUpperCase());
+    return row?.status ?? null;
+}
+
+// Everything we can tell about each tag: what it is (TagLookup), where it is, its status there
+// (EpcList), and whether an unfinished transfer/count holds it. At most 3 status queries run at once.
+export async function inspectTags(auth, epcs, lookupTags) {
+    const { tags, unknown, failed } = await lookupTags(auth, epcs);
+    const results = tags.map((t) => ({ ...t, found: true, status: null }));
+
+    let next = 0;
+    const worker = async () => {
+        while (next < results.length) {
+            const r = results[next++];
+            if (!r.store_id) continue; // not in any store (e.g. never stocked in): no status to look up
+            try {
+                r.status = await tagStatus(auth, r.store_id, r.epc);
+            } catch (err) {
+                if (err.status === 401 || err.status === 503) throw err; // session/config problems stop everything
+                r.status_error = err.message;
+            }
+        }
+    };
+    await Promise.all(Array.from({ length: Math.min(3, results.length) }, worker));
+
+    // Keep the order the user typed them in.
+    const byEpc = new Map([
+        ...results.map((r) => [r.epc, r]),
+        ...unknown.map((epc) => [epc, { epc, found: false }]),
+        ...failed.map((f) => [f.epc, { epc: f.epc, found: null, error: f.error }]),
+    ]);
+    return epcs.map((epc) => byEpc.get(epc) ?? { epc, found: null, error: 'No answer' });
+}
+
 // ---------- transfers, stock counts, adjustments ----------
 
 const pick = (obj, ...keys) => {
