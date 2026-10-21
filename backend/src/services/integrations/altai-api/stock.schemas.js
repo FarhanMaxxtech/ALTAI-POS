@@ -20,11 +20,11 @@ export const skuTagsQuerySchema = z.object({
 
 const epc = z.string().trim().regex(/^[0-9A-Fa-f]{8,64}$/, 'EPC must be 8-64 hex characters').toUpperCase();
 export const inspectSchema = z.strictObject({
-    // At most 50: each tag costs one or two calls to the team's API.
+    // At most 50: one EpcList call covers them all, but each tag still costs one TagLookup.
     epcs: z.array(epc).min(1).max(50).refine((l) => new Set(l).size === l.length, 'Duplicate EPC in list'),
 });
 
-export const kindParamSchema = z.object({ kind: z.enum(['transfers', 'counts', 'adjustments']) });
+export const kindParamSchema = z.object({ kind: z.enum(['transfers', 'counts', 'adjustments', 'checkouts']) });
 export const kindIdParamSchema = kindParamSchema.extend({ id: z.string().trim().min(1).max(50) });
 
 // Dates as YYYY-MM-DD. Default: the last 30 days up to today.

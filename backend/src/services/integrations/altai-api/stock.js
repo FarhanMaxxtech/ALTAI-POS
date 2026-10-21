@@ -2,13 +2,12 @@ import HttpError from '../../../lib/httpError.js';
 import { request, expectOk } from './client.js';
 
 // READ-ONLY inventory from the team's API: stock per store, and the history of transfers,
-// stock counts and adjustments. Nothing here changes stock. Approving, voiding and creating stay
-// in the team's own website (decision 006).
+// stock counts, adjustments and checkouts. Nothing here changes stock. Creating, approving and
+// voiding stay in the team's own website (decision 006).
 //
-// Field names: EpcList is documented in the rfid_counter app. The transaction lists/details are
-// not: that app treats them as unnamed data. So `normalizeTransaction` tries the likely names and
-// keeps the original as `raw`. In development, the backend log prints each response's real field
-// names once ("[team API shape] …"): use it to confirm and tighten the mapping.
+// Field names follow the team's Postman docs (summarised in docs/api/team-api-reference.md).
+// Each record also keeps the original as `raw`, and in development the backend log prints each
+// response's real field names once ("[team API shape] …") so differences show up quickly.
 
 // ---------- stock levels (Stock/EpcList: one row per physical tagged item) ----------
 
@@ -113,105 +112,134 @@ export async function searchStoreTags(auth, storeId, q, { limit = 500 } = {}) {
 
 // ---------- tag inspector ----------
 
-// The status of ONE tag in its store, with a small targeted query (EpcList filtered by EPC)
-// instead of downloading the whole store. null when the team's API doesn't list it there.
-async function tagStatus(auth, storeId, epc) {
-    const data = expectOk(
-        await request({ method: 'POST', path: 'Stock/EpcList', auth, body: { epc, productName: '', storeId, page: 1, pageSize: 10 } }),
-        'Stock/EpcList',
-    );
-    // The filter may match partially, so pick the exact EPC.
-    const row = (data?.data ?? []).map(mapEpcRow).find((r) => r.epc === epc.toUpperCase());
-    return row?.status ?? null;
-}
-
-// Everything we can tell about each tag: what it is (TagLookup), where it is, its status there
-// (EpcList), and whether an unfinished transfer/count holds it. At most 3 status queries run at once.
+// Everything we can tell about each tag, in TWO kinds of call instead of two per tag:
+//   - ONE EpcList call with the whole list (`epcs`): where each tag is and its status, plus
+//     `notFound` for tags the system doesn't know (documented in docs/api/team-api-reference.md)
+//   - TagLookup per tag (max 5 at once, see lookupTags): what it is, and whether an unfinished
+//     transfer/count/adjustment holds it (EpcList doesn't say that)
 export async function inspectTags(auth, epcs, lookupTags) {
-    const { tags, unknown, failed } = await lookupTags(auth, epcs);
-    const results = tags.map((t) => ({ ...t, found: true, status: null }));
-
-    let next = 0;
-    const worker = async () => {
-        while (next < results.length) {
-            const r = results[next++];
-            if (!r.store_id) continue; // not in any store (e.g. never stocked in): no status to look up
-            try {
-                r.status = await tagStatus(auth, r.store_id, r.epc);
-            } catch (err) {
+    const [lookup, list] = await Promise.all([
+        lookupTags(auth, epcs),
+        request({ method: 'POST', path: 'Stock/EpcList', auth, body: { epc: '', productName: '', storeId: '', page: 1, pageSize: epcs.length, epcs } })
+            .then((res) => expectOk(res, 'Stock/EpcList'))
+            .catch((err) => {
                 if (err.status === 401 || err.status === 503) throw err; // session/config problems stop everything
-                r.status_error = err.message;
-            }
-        }
-    };
-    await Promise.all(Array.from({ length: Math.min(3, results.length) }, worker));
+                return { error: err.message };
+            }),
+    ]);
+
+    const statusByEpc = new Map((list.data ?? []).map(mapEpcRow).map((r) => [r.epc, r]));
+    const results = lookup.tags.map((t) => {
+        const row = statusByEpc.get(t.epc);
+        return {
+            ...t,
+            found: true,
+            status: row?.status ?? null,
+            // EpcList also knows the store; prefer it when TagLookup didn't say
+            store_id: t.store_id ?? row?.store_id ?? null,
+            store_name: t.store_name ?? row?.store_name ?? null,
+            ...(list.error ? { status_error: list.error } : {}),
+        };
+    });
 
     // Keep the order the user typed them in.
     const byEpc = new Map([
         ...results.map((r) => [r.epc, r]),
-        ...unknown.map((epc) => [epc, { epc, found: false }]),
-        ...failed.map((f) => [f.epc, { epc: f.epc, found: null, error: f.error }]),
+        ...lookup.unknown.map((epc) => [epc, { epc, found: false }]),
+        ...lookup.failed.map((f) => [f.epc, { epc: f.epc, found: null, error: f.error }]),
     ]);
     return epcs.map((epc) => byEpc.get(epc) ?? { epc, found: null, error: 'No answer' });
 }
 
-// ---------- transfers, stock counts, adjustments ----------
+// ---------- transfers, stock counts, adjustments, checkouts ----------
+// Field names as documented (docs/api/team-api-reference.md). The original record stays in `raw`.
 
 const pick = (obj, ...keys) => {
     for (const k of keys) if (obj?.[k] !== undefined && obj[k] !== null && obj[k] !== '') return obj[k];
     return null;
 };
+const num = (v) => (v === null || v === undefined || v === '' || Number.isNaN(Number(v)) ? null : Number(v));
 
-// The likely field names, best guess first. Unknown ones stay in `raw`.
-export function normalizeTransaction(r) {
-    const items = pick(r, 'items', 'details', 'lines', 'products', 'epcs');
-    const quantity = pick(r, 'totalQty', 'qty', 'quantity', 'epcCount', 'itemCount', 'total');
+// Codes the docs explain. Everything else is shown as "Status <code>" until the team tells us more.
+const STATUS_NAMES = { counts: { 10: 'Pending Review', 30: 'Approved' } };
+const TYPE_NAMES = { ADI: 'Stock in', ADO: 'Stock out', TFO: 'Out of source store', TFI: 'Into destination store' };
+
+function statusLabel(kind, r) {
+    const code = pick(r, 'status');
+    return pick(r, 'statusName') ?? STATUS_NAMES[kind]?.[code] ?? (code === null ? null : `Status ${code}`);
+}
+
+export function normalizeTransaction(kind, r) {
+    const type = pick(r, 'trxType');
     return {
-        id: String(pick(r, 'id', 'trxId', 'transactionId') ?? ''),
-        reference: pick(r, 'trxNo', 'referenceNo', 'docNo', 'code'),
-        date: pick(r, 'trxDate', 'date', 'createdAt', 'createdDate', 'createDate'),
-        type: pick(r, 'trxType', 'type', 'typeName'),
-        status: pick(r, 'status', 'statusName', 'statusText'),
-        store_name: pick(r, 'storeName', 'fromStoreName', 'fromStore'),
-        to_store_name: pick(r, 'toStoreName', 'toStore'),
-        quantity: quantity === null ? (Array.isArray(items) ? items.length : null) : Number(quantity),
-        remark: pick(r, 'remark', 'remarks', 'note'),
-        created_by: pick(r, 'createdBy', 'createdByName', 'userName', 'user'),
+        id: String(pick(r, 'id', 'trxId') ?? ''),     // what TransferInfo/…Info?id= expects
+        trx_id: pick(r, 'trxId'),                      // the team's own transaction number
+        // What staff recognise: a stock count's refno (FS4-SCA000006), else the transaction number, else the id.
+        reference: String(pick(r, 'refno', 'trxId', 'id') ?? ''),
+        date: pick(r, 'trxDate'),
+        status: pick(r, 'status'),                     // the raw code (1, 10, 30, "Y"…)
+        status_label: statusLabel(kind, r),
+        type,                                          // ADI / ADO (adjustments)
+        type_label: type ? (TYPE_NAMES[type] ?? type) : null,
+        store_id: pick(r, 'storeId', 'fromStoreId')?.toString() ?? null,
+        store_name: pick(r, 'storeName', 'fromStoreName'),
+        store_code: pick(r, 'fromStoreCode', 'storeCode'),
+        to_store_name: pick(r, 'toStoreName'),
+        to_store_code: pick(r, 'toStoreCode'),
+        remark: pick(r, 'remark'),
+        // Stock counts carry totals in the list; the others only have quantities in their lines.
+        totals: kind === 'counts'
+            ? { counted: num(r.totalCounted), expected: num(r.totalExpected), variance: num(r.totalVariance) }
+            : null,
         raw: r,
     };
 }
 
-// Lines of a transaction detail, in one shape: the EPC, SKU, product and variation when present.
-function normalizeLines(detail) {
-    const items = pick(detail, 'items', 'details', 'lines', 'products', 'epcs') ?? [];
-    if (!Array.isArray(items)) return [];
-    return items.map((it) => (typeof it === 'string'
-        ? { epc: it, sku: null, product_name: null, variation: null, quantity: 1, status: null }
-        : {
-            epc: pick(it, 'epc'),
-            sku: pick(it, 'sku'),
-            product_name: pick(it, 'productName', 'name'),
-            variation: pick(it, 'varLabel', 'variation'),
-            quantity: Number(pick(it, 'qty', 'quantity') ?? 1),
-            status: pick(it, 'status'),
-        }));
+// Detail lines are per SKU (not per tag), with quantity fields that depend on the kind.
+function normalizeLine(it) {
+    return {
+        sku: pick(it, 'sku'),
+        product_code: pick(it, 'productCode'),
+        product_name: pick(it, 'productName'),
+        variation: pick(it, 'varLabel'),
+        qty: num(it.qty),               // transfers, checkouts
+        qty_in: num(it.qtyIn),          // adjustments
+        qty_out: num(it.qtyOut),        // adjustments
+        counted: num(it.counted),       // stock counts
+        expected: num(it.expected),     // stock counts
+        variance: num(it.variance),     // stock counts
+        line_type: pick(it, 'trxType'), // transfers: TFO (out of source) / TFI (into destination)
+    };
 }
 
-// The three kinds, and their endpoints and filter names as the team's app uses them.
+// The number of items in a detail, counted once (a transfer lists each SKU twice: TFO and TFI).
+function itemCount(kind, lines, header) {
+    if (kind === 'counts') return header.totals?.counted ?? lines.reduce((s, l) => s + (l.counted ?? 0), 0);
+    if (kind === 'adjustments') return lines.reduce((s, l) => s + (l.qty_in ?? 0) + (l.qty_out ?? 0), 0);
+    if (kind === 'transfers') return lines.filter((l) => l.line_type !== 'TFI').reduce((s, l) => s + (l.qty ?? 0), 0);
+    return lines.reduce((s, l) => s + (l.qty ?? 0), 0);
+}
+
+// The four kinds and their documented endpoints. Transfers are filtered by their SOURCE store.
 const KINDS = {
     transfers:   { list: 'Stock/TransferList',   info: 'Stock/TransferInfo',   storeParam: 'fromStoreId' },
     counts:      { list: 'Stock/StockCountList', info: 'Stock/StockCountInfo', storeParam: 'storeId' },
     adjustments: { list: 'Stock/AdjustmentList', info: 'Stock/AdjustmentInfo', storeParam: 'storeId' },
+    checkouts:   { list: 'Stock/CheckoutList',   info: 'Stock/CheckoutInfo',   storeParam: 'storeId' },
 };
 
+// The team's list endpoints only filter by store and date, so the optional status filter is applied
+// here: it matches the code ("30") or part of the label ("approved").
 export async function listTransactions(auth, kind, { storeId, dateFrom, dateTo, status }) {
     const k = KINDS[kind];
     const data = expectOk(
-        await request({ path: k.list, auth, query: { [k.storeParam]: storeId, dateFrom, dateTo, status } }),
+        await request({ path: k.list, auth, query: { [k.storeParam]: storeId, dateFrom, dateTo } }),
         k.list,
     );
-    const list = data?.data ?? data?.list ?? (Array.isArray(data) ? data : []);
-    return list.map(normalizeTransaction);
+    const list = (data?.data ?? (Array.isArray(data) ? data : [])).map((r) => normalizeTransaction(kind, r));
+    if (!status) return list;
+    const needle = status.trim().toLowerCase();
+    return list.filter((t) => String(t.status).toLowerCase() === needle || t.status_label?.toLowerCase().includes(needle));
 }
 
 export async function transactionDetail(auth, kind, id) {
@@ -219,7 +247,9 @@ export async function transactionDetail(auth, kind, id) {
     const data = expectOk(await request({ path: k.info, auth, query: { id } }), k.info, { errorStatus: 404 });
     const detail = data?.data && typeof data.data === 'object' && !Array.isArray(data.data) ? data.data : data;
     if (!detail || typeof detail !== 'object') throw new HttpError(502, `Team API returned an unexpected ${k.info} response`);
-    return { ...normalizeTransaction(detail), lines: normalizeLines(detail) };
+    const header = normalizeTransaction(kind, detail);
+    const lines = Array.isArray(detail.lines) ? detail.lines.map(normalizeLine) : [];
+    return { ...header, lines, item_count: itemCount(kind, lines, header) };
 }
 
 // For tests: forget cached store lists.

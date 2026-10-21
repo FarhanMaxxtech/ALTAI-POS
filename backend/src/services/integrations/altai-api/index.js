@@ -42,7 +42,10 @@ export async function login({ login_id, password, epc }) {
 // The permission ids this user has, e.g. [1, 4, 7]. What each id means: ask the team (unconfirmed).
 export async function getPermissions(auth) {
     const data = expectOk(await request({ path: 'Merchant/AccessControl', auth }), 'Merchant/AccessControl');
-    return (data?.data ?? []).map((p) => Number(p.id)).filter(Number.isFinite);
+    // Documented as [{ id, name }], e.g. { id: 602130, name: "Stock Transfer" }.
+    return (data?.data ?? [])
+        .map((p) => ({ id: Number(p.id), name: p.name ?? null }))
+        .filter((p) => Number.isFinite(p.id));
 }
 
 // ---------- stores ----------

@@ -38,7 +38,7 @@ export const navigation = [
         title: 'Catalog',
         items: [
             { path: '/products', label: 'Products', icon: 'shirt', status: 'ready', page: 'products', source: 'Team API',
-                summary: 'Scan or paste RFID tags to see which products, SKUs and stores they belong to.' },
+                summary: 'The team\'s product list with SKUs, prices and stock, and a lookup by RFID tag.' },
             { path: '/prices', label: 'Prices', icon: 'tag', status: 'ready', page: 'prices', source: 'ALTAI backend',
                 summary: 'Set the selling price per SKU and per store, and update a whole style at once.' },
             { path: '/categories', label: 'Categories', icon: 'folder', status: 'planned', phase: 'Phase 1', source: 'Team API',
@@ -58,6 +58,8 @@ export const navigation = [
                 summary: 'Stock takes done with the RFID handheld, and their result (view only).' },
             { path: '/adjustments', label: 'Adjustments', icon: 'sliders', status: 'ready', page: 'adjustments', source: 'Team API',
                 summary: 'Corrections to stock, e.g. damaged, lost or found items (view only).' },
+            { path: '/checkouts', label: 'Checkouts', icon: 'receipt', status: 'ready', page: 'checkouts', source: 'Team API',
+                summary: 'Items checked out (sold) at the till in the team\'s system, per SKU (view only).' },
             { path: '/rfid', label: 'RFID tags', icon: 'signal', status: 'ready', page: 'rfidTags', source: 'Team API',
                 summary: 'Inspect tags (what, where, status, pending transactions) and search a store\'s tags (view only).' },
         ],

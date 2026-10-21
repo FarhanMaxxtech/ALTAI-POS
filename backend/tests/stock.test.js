@@ -28,7 +28,13 @@ fake.use((req, res, next) => {
 });
 fake.get('/rest/Stock/StoreList', (req, res) => res.json({ data: [{ id: 12, name: 'MidValley' }, { id: 13, name: 'Pavilion' }, { id: 14, name: 'Mega Warehouse' }] }));
 fake.post('/rest/Stock/EpcList', (req, res) => {
-    const { storeId, page, pageSize, epc } = req.body;
+    const { storeId, page, pageSize, epc, epcs } = req.body;
+    if (Array.isArray(epcs) && epcs.length) { // documented: exactly these tags, the rest in notFound
+        const wanted = epcs.map((e) => e.toUpperCase());
+        const rows = store12.filter((t) => wanted.includes(t.epc.toUpperCase()));
+        const known = new Set(rows.map((t) => t.epc.toUpperCase()));
+        return res.json({ recordsTotal: rows.length, data: rows, notFound: wanted.filter((e) => !known.has(e)) });
+    }
     if (epc) { // filtered by EPC (partial match, like a search)
         const rows = store12.filter((t) => storeId === '12' && t.epc.toUpperCase().includes(epc.toUpperCase()));
         return res.json({ recordsTotal: rows.length, data: rows.slice(0, pageSize) });
@@ -46,16 +52,25 @@ fake.post('/rest/Stock/TagLookup', (req, res) => {
     res.json({ productName: tag.productName, sku: tag.sku, productCode: tag.productCode, varLabel: tag.varLabel,
         varDetails: [], storeId: 12, storeName: 'MidValley', isPendingTransaction: pending, ...(pending ? { pendingTrxId: 'TRF-0042' } : {}) });
 });
-fake.get('/rest/Stock/TransferList', (req, res) => res.json({ data: [
-    { trxId: 'TR-1', trxDate: '2026-10-20', status: 'pending', fromStoreName: 'MidValley', toStoreName: 'Pavilion', totalQty: 5, remark: 'Restock' },
+// Transaction endpoints in the documented shapes (docs/api/team-api-reference.md).
+const line = { sku: 'CT-BLK-M', productCode: 'CT', productName: 'Classic Tee', varLabel: 'Black / M', varDetails: [] };
+fake.get('/rest/Stock/TransferList', (req, res) => res.json({ recordsTotal: 1, data: [
+    { id: 88, trxId: 'TR-1', fromStoreId: 12, fromStoreName: 'MidValley', fromStoreCode: 'MV', toStoreId: 13, toStoreName: 'Pavilion', toStoreCode: 'PV', trxDate: '2026-10-20', remark: 'Restock', status: 1 },
 ] }));
-fake.get('/rest/Stock/TransferInfo', (req, res) => (req.query.id === 'TR-1'
-    ? res.json({ data: { trxId: 'TR-1', status: 'pending', fromStoreName: 'MidValley', toStoreName: 'Pavilion',
-        items: [{ epc: 'E1', sku: 'CT-BLK-M', productName: 'Classic Tee', varLabel: 'Black / M' }, { epc: 'E2', sku: 'CT-BLK-M', productName: 'Classic Tee', varLabel: 'Black / M' }] } })
-    : res.json({ error: { message: 'Transaction not found' } })));
-fake.get('/rest/Stock/StockCountList', (req, res) => res.json({ data: [{ id: 41, date: '2026-10-19', status: 'approved', storeName: 'MidValley', epcs: ['E1', 'E2', 'E3'] }] }));
-fake.get('/rest/Stock/StockCountInfo', (req, res) => res.json({ id: 41, status: 'approved', epcs: ['E1', 'E2', 'E3'] }));
-fake.get('/rest/Stock/AdjustmentList', (req, res) => res.json({ list: [{ id: 7, trxType: 'damaged', status: 'void', qty: '2' }] }));
+fake.get('/rest/Stock/TransferInfo', (req, res) => (req.query.id === '88'
+    ? res.json({ id: 88, trxId: 'TR-1', fromStoreName: 'MidValley', toStoreName: 'Pavilion', trxDate: '2026-10-20', status: 1,
+        lines: [{ ...line, qty: 2, trxType: 'TFO' }, { ...line, qty: 2, trxType: 'TFI' }] })
+    : res.json({ error: 'Transaction not found' })));
+fake.get('/rest/Stock/StockCountList', (req, res) => res.json({ recordsTotal: 2, data: [
+    { id: 41, refno: 'FS4-SCA000006', storeId: 12, storeName: 'MidValley', trxDate: '2026-10-19', remark: '', status: 30, statusName: 'Approved', totalCounted: 9, totalExpected: 10, totalVariance: -1 },
+    { id: 42, refno: 'FS4-SCA000007', storeId: 12, storeName: 'MidValley', trxDate: '2026-10-20', remark: '', status: 10, totalCounted: 3, totalExpected: 3, totalVariance: 0 },
+] }));
+fake.get('/rest/Stock/StockCountInfo', (req, res) => res.json({ data: { id: 41, refno: 'FS4-SCA000006', status: 30, statusName: 'Approved', totalCounted: 9, totalExpected: 10, totalVariance: -1,
+    lines: [{ ...line, counted: 9, expected: 10, variance: -1, qty: 9 }] } }));
+fake.get('/rest/Stock/AdjustmentList', (req, res) => res.json({ data: [{ id: 7, trxId: 'ADJ-7', trxType: 'ADO', storeId: 12, storeName: 'MidValley', trxDate: '2026-10-18', remark: 'Damaged', status: 1 }] }));
+fake.get('/rest/Stock/AdjustmentInfo', (req, res) => res.json({ id: 7, trxId: 'ADJ-7', trxType: 'ADO', status: 1, lines: [{ ...line, qtyIn: 0, qtyOut: 2 }] }));
+fake.get('/rest/Stock/CheckoutList', (req, res) => res.json({ recordsTotal: 1, data: [{ id: 5, storeId: 12, storeName: 'MidValley', trxDate: '2026-10-21', remark: 'Till 1', status: 'Y' }] }));
+fake.get('/rest/Stock/CheckoutInfo', (req, res) => res.json({ id: 5, storeId: 12, storeName: 'MidValley', trxDate: '2026-10-21', status: 'Y', lines: [{ ...line, qty: 3 }] }));
 
 let fakeServer, api, db, stock, auth;
 
@@ -117,37 +132,59 @@ test('an empty store, and a store too big to fetch completely', async () => {
     assert.deepEqual([big.body.tag_count, big.body.reported_total, big.body.complete], [10000, 20000, false]);
 });
 
-test('transfers: filters passed on (default last 30 days), fields mapped, original kept', async () => {
+test('transfers: filters passed on (default last 30 days), documented fields mapped, original kept', async () => {
     const res = await api.get('/api/stock/transfers').set(auth).query({ store_id: '12', to: '2026-10-21' }).expect(200);
     const sent = calls.findLast((c) => c.path === '/rest/Stock/TransferList');
     // { ...x }: Express 5 builds query objects without a prototype; copy it into a plain object to compare.
     assert.deepEqual({ ...sent.query }, { fromStoreId: '12', dateFrom: '2026-09-21', dateTo: '2026-10-21' });
 
     const t = res.body.transactions[0];
-    assert.deepEqual(
-        (({ id, date, status, store_name, to_store_name, quantity, remark }) => ({ id, date, status, store_name, to_store_name, quantity, remark }))(t),
-        { id: 'TR-1', date: '2026-10-20', status: 'pending', store_name: 'MidValley', to_store_name: 'Pavilion', quantity: 5, remark: 'Restock' },
-    );
+    const pickT = ({ id, trx_id, reference, date, status, status_label, store_name, store_code, to_store_name, to_store_code, remark, totals }) =>
+        ({ id, trx_id, reference, date, status, status_label, store_name, store_code, to_store_name, to_store_code, remark, totals });
+    assert.deepEqual(pickT(t), {
+        id: '88', trx_id: 'TR-1', reference: 'TR-1', date: '2026-10-20', status: 1, status_label: 'Status 1',
+        store_name: 'MidValley', store_code: 'MV', to_store_name: 'Pavilion', to_store_code: 'PV', remark: 'Restock', totals: null,
+    });
     assert.equal(t.raw.trxId, 'TR-1');
 });
 
-test('transfer detail with lines; unknown id → 404', async () => {
-    const res = await api.get('/api/stock/transfers/TR-1').set(auth).expect(200);
-    assert.equal(res.body.transaction.lines.length, 2);
-    assert.deepEqual(res.body.transaction.lines[0], { epc: 'E1', sku: 'CT-BLK-M', product_name: 'Classic Tee', variation: 'Black / M', quantity: 1, status: null });
+test('transfer detail: per-SKU lines out and in, counted once; unknown id → 404', async () => {
+    const res = await api.get('/api/stock/transfers/88').set(auth).expect(200);
+    const tr = res.body.transaction;
+    assert.deepEqual(tr.lines.map((l) => [l.sku, l.qty, l.line_type]), [['CT-BLK-M', 2, 'TFO'], ['CT-BLK-M', 2, 'TFI']]);
+    assert.equal(tr.lines[0].product_code, 'CT');
+    assert.equal(tr.item_count, 2, 'the TFI line repeats the TFO line, so it is not added again');
     await api.get('/api/stock/transfers/NOPE').set(auth).expect(404);
 });
 
-test('stock counts and adjustments: other names for the same things', async () => {
-    const counts = await api.get('/api/stock/counts').set(auth).query({ store_id: '12', status: 'approved' }).expect(200);
+test('stock counts: refno as reference, status names, totals; status filter applied here', async () => {
+    const all = await api.get('/api/stock/counts').set(auth).query({ store_id: '12' }).expect(200);
     assert.deepEqual(calls.findLast((c) => c.path === '/rest/Stock/StockCountList').query.storeId, '12');
-    assert.deepEqual([counts.body.transactions[0].id, counts.body.transactions[0].quantity], ['41', 3], 'quantity from the EPC list');
+    assert.deepEqual(all.body.transactions.map((t) => [t.reference, t.status, t.status_label]),
+        [['FS4-SCA000006', 30, 'Approved'], ['FS4-SCA000007', 10, 'Pending Review']], 'missing statusName filled from the known codes');
+    assert.deepEqual(all.body.transactions[0].totals, { counted: 9, expected: 10, variance: -1 });
 
-    const detail = await api.get('/api/stock/counts/41').set(auth).expect(200);
-    assert.deepEqual(detail.body.transaction.lines.map((l) => l.epc), ['E1', 'E2', 'E3'], 'plain EPC strings become lines');
+    const approved = await api.get('/api/stock/counts').set(auth).query({ store_id: '12', status: 'approved' }).expect(200);
+    assert.deepEqual(approved.body.transactions.map((t) => t.id), ['41']);
+    const byCode = await api.get('/api/stock/counts').set(auth).query({ store_id: '12', status: '10' }).expect(200);
+    assert.deepEqual(byCode.body.transactions.map((t) => t.id), ['42']);
 
-    const adj = await api.get('/api/stock/adjustments').set(auth).query({ store_id: '12' }).expect(200);
-    assert.deepEqual([adj.body.transactions[0].type, adj.body.transactions[0].status, adj.body.transactions[0].quantity], ['damaged', 'void', 2]);
+    const detail = (await api.get('/api/stock/counts/41').set(auth).expect(200)).body.transaction;
+    assert.deepEqual((({ counted, expected, variance }) => ({ counted, expected, variance }))(detail.lines[0]), { counted: 9, expected: 10, variance: -1 });
+    assert.equal(detail.item_count, 9);
+});
+
+test('adjustments (stock in/out per SKU) and checkouts (sales)', async () => {
+    const adj = (await api.get('/api/stock/adjustments').set(auth).query({ store_id: '12' }).expect(200)).body.transactions[0];
+    assert.deepEqual([adj.type, adj.type_label, adj.trx_id], ['ADO', 'Stock out', 'ADJ-7']);
+    const adjDetail = (await api.get('/api/stock/adjustments/7').set(auth).expect(200)).body.transaction;
+    assert.deepEqual([adjDetail.lines[0].qty_in, adjDetail.lines[0].qty_out, adjDetail.item_count], [0, 2, 2]);
+
+    const co = await api.get('/api/stock/checkouts').set(auth).query({ store_id: '12' }).expect(200);
+    assert.equal(calls.findLast((c) => c.path === '/rest/Stock/CheckoutList').query.storeId, '12');
+    assert.deepEqual([co.body.transactions[0].id, co.body.transactions[0].status_label], ['5', 'Status Y']);
+    const coDetail = (await api.get('/api/stock/checkouts/5').set(auth).expect(200)).body.transaction;
+    assert.deepEqual([coDetail.lines[0].qty, coDetail.item_count], [3, 3]);
 });
 
 test('tag inspector: what, where, status there, pending transaction; order kept; unknown flagged', async () => {
@@ -164,8 +201,9 @@ test('tag inspector: what, where, status there, pending transaction; order kept;
     assert.deepEqual(b, { epc: unknown, found: false });
     assert.deepEqual([c.epc, c.status, c.pending_transaction], [sold, 'SOLD', false]);
 
-    const statusCalls = calls.filter((x) => x.path === '/rest/Stock/EpcList' && x.body?.epc);
-    assert.ok(statusCalls.length >= 2 && statusCalls.every((x) => x.body.pageSize === 10), 'small targeted status queries, not the whole store');
+    const listCalls = calls.filter((x) => x.path === '/rest/Stock/EpcList' && x.body?.epcs);
+    assert.equal(listCalls.length, 1, 'one EpcList call for the whole list');
+    assert.deepEqual([listCalls[0].body.epcs.length, listCalls[0].body.pageSize, listCalls[0].body.storeId], [3, 3, '']);
 });
 
 test('tag inspector: limits', async () => {

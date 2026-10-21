@@ -10,7 +10,7 @@ import ProductsPage from './features/catalog/ProductsPage.jsx';
 import PricesPage from './features/pricing/PricesPage.jsx';
 import RfidTagsPage from './features/inventory/RfidTagsPage.jsx';
 import StockLevelsPage from './features/inventory/StockLevelsPage.jsx';
-import { AdjustmentsPage, StockCountsPage, TransfersPage } from './features/inventory/TransactionsPage.jsx';
+import { AdjustmentsPage, CheckoutsPage, StockCountsPage, TransfersPage } from './features/inventory/TransactionsPage.jsx';
 import SettingsPage from './features/settings/SettingsPage.jsx';
 import ShiftsPage from './features/shifts/ShiftsPage.jsx';
 import StoresPage from './features/stores/StoresPage.jsx';
@@ -19,6 +19,7 @@ import { allNavItems } from './navigation.js';
 // Built pages, by the `page` key used in navigation.js.
 const pages = {
     campaigns: CampaignsPage,
+    checkouts: CheckoutsPage,
     customers: CustomersPage,
     home: HomePage,
     prices: PricesPage,

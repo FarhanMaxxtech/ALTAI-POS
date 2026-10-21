@@ -33,7 +33,7 @@ fake.post('/rest/Merchant/Login', (req, res) => {
     // Like the real API: a failed login is still HTTP 200, with the error in the body.
     res.json({ error: { message: 'Invalid credentials' } });
 });
-fake.get('/rest/Merchant/AccessControl', (req, res) => res.json({ data: [{ id: 1 }, { id: '4' }] }));
+fake.get('/rest/Merchant/AccessControl', (req, res) => res.json({ data: [{ id: 602130, name: 'Stock Transfer' }, { id: '450', name: 'Tags' }, { name: 'no id' }] }));
 fake.get('/rest/Stock/StoreList', (req, res) => res.json({ data: [{ id: 12, name: 'MidValley' }, { id: 13, name: 'Pavilion' }] }));
 fake.post('/rest/Stock/TagLookup', async (req, res) => {
     inFlight++; maxInFlight = Math.max(maxInFlight, inFlight);
@@ -143,7 +143,7 @@ test('signed token: an expired token is rejected', async () => {
 
 test('/auth/me returns merchant and permission ids', async () => {
     const res = await api.get('/api/auth/me').set(auth).expect(200);
-    assert.deepEqual(res.body, { ok: true, merchant_id: '42', permissions: [1, 4] });
+    assert.deepEqual(res.body, { ok: true, merchant_id: '42', permissions: [{ id: 602130, name: 'Stock Transfer' }, { id: 450, name: 'Tags' }] });
 });
 
 test('store list is mapped to { id, name }', async () => {

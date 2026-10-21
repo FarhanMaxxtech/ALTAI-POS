@@ -2,8 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { api } from '../../api/client.js';
 import { formatRM } from '../../lib/money.js';
 import { MAX_PER_REQUEST, chunk, groupBySku, parseEpcs, priceForRow } from './epc.js';
+import CatalogueList from './CatalogueList.jsx';
 
-// PRODUCTS PAGE: find out which products a set of RFID tags belongs to.
+// PRODUCTS PAGE, two tabs:
+//   - "Catalogue": the team's product list with SKUs, prices and stock (see CatalogueList.jsx)
+//   - "Scan tags": find out which products a set of RFID tags belongs to (this file)
+//
+// Scan tags, 
 //
 // How it works, step by step:
 //   1. The user scans tags with an RFID reader (the reader "types" each code and presses Enter),
@@ -14,8 +19,6 @@ import { MAX_PER_REQUEST, chunk, groupBySku, parseEpcs, priceForRow } from './ep
 //   4. We group the answers by SKU (see groupBySku) and show one row per product variant,
 //      plus the tags nobody recognised and the ones that failed.
 //
-// Why tags and not a normal product list? The team's API can tell us about a tag, but it doesn't
-// yet have a "list all products" call. When it does, this page gets a second tab for that.
 
 // The price column: the price, "varies by store", "no price" (can't be sold yet), or "—" (unknown).
 function PriceCell({ price }) {
@@ -25,7 +28,7 @@ function PriceCell({ price }) {
     return <span className="muted">—</span>;
 }
 
-export default function ProductsPage() {
+function TagLookup() {
     // --- What the page remembers ("state") ---
     // React re-draws the page whenever one of these changes.
     const [text, setText] = useState('');            // everything typed/scanned into the box
@@ -129,11 +132,6 @@ export default function ProductsPage() {
     // --- What the page shows ---
     return (
         <>
-            <div className="page-header">
-                <h1>Products</h1>
-                <span className="muted">Look up products by RFID tag</span>
-            </div>
-
             {/* Box where tags are scanned or pasted */}
             <section className="card">
                 <label className="field" htmlFor="epc-input">
@@ -260,6 +258,26 @@ export default function ProductsPage() {
                     )}
                 </section>
             )}
+        </>
+    );
+}
+
+const TABS = [['catalogue', 'Catalogue'], ['tags', 'Scan tags']];
+
+export default function ProductsPage() {
+    const [tab, setTab] = useState('catalogue');
+    return (
+        <>
+            <div className="page-header">
+                <h1>Products</h1>
+                <div className="segmented" role="tablist" aria-label="Products view">
+                    {TABS.map(([key, label]) => (
+                        <button key={key} type="button" role="tab" aria-selected={tab === key}
+                            className={tab === key ? 'active' : ''} onClick={() => setTab(key)}>{label}</button>
+                    ))}
+                </div>
+            </div>
+            {tab === 'catalogue' ? <CatalogueList /> : <TagLookup />}
         </>
     );
 }

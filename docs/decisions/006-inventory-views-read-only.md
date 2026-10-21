@@ -14,10 +14,10 @@ Creating, approving and voiding them stays in the team's own website and the RFI
 
 ## How it works
 - **Stock levels** = every tagged item in a store from `Stock/EpcList` (paged, 200 per page, up to 10,000 per store), counted per SKU and split by the tag's status in their system. The list is cached for 60 seconds per store; "Refresh" fetches it again.
-- **RFID tags** = a read-only inspector (TagLookup + a small EpcList query per tag for its status) and a search across a store's cached tag list. Assigning tags (`Stock/UpdateTag`) stays in the handheld app; their API has no way to mark tags missing/sold.
-- **Transfers / counts / adjustments** = `Stock/TransferList|StockCountList|AdjustmentList` and their `…Info` endpoints. Their field names aren't documented, so the backend maps the likely names and also returns the original record (`raw`).
+- **RFID tags** = a read-only inspector (TagLookup per tag + one EpcList call with the whole list for status) and a search across a store's cached tag list. Assigning tags (`Stock/UpdateTag`) stays in the handheld app; their API has no way to mark tags missing/sold.
+- **Transfers / counts / adjustments / checkouts** = `Stock/TransferList|StockCountList|AdjustmentList|CheckoutList` and their `…Info` endpoints, mapped to the field names in the team's Postman docs (docs/api/team-api-reference.md, added 2026-10-21). The original record (`raw`) is still returned.
 
 ## To revisit when
-- The team sends their API docs: confirm the field mapping in `services/integrations/altai-api/stock.js` (the dev log line `[team API shape] Stock/TransferList: …` shows the real names).
+- The team explains their status codes (adjustment/transfer `1`, checkout `"Y"`, tag `"1"`): add the meanings to `STATUS_NAMES` in `stock.js`.
 - The team provides a test server and confirms the approve/void endpoints: actions can then be added here.
 - A store has more than 10,000 tags: page through on demand instead of fetching everything.

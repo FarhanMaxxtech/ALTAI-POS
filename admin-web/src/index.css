@@ -407,3 +407,7 @@ a.stat:hover { border-color: var(--primary); }
 
 /* ---------- rfid tags ---------- */
 .page-header .segmented { margin-left: auto; }
+
+/* Catalogue: a product row opened to show its SKUs */
+.detail-row > td { background: var(--bg); padding: 0.5rem 0.75rem 0.75rem; }
+.detail-row .data-table { background: var(--surface); }
