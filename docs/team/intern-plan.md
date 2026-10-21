@@ -110,6 +110,18 @@ Write everything into **`docs/domain/retail-pos-features.md`**, with links to yo
   - refund to card
   - return without a receipt (what should happen?)
 
+## Customers & campaigns (built by the lead; you test and research)
+
+- [ ] **Test checklist:** `docs/testing/customers-checklist.md`. Try, and write what should happen:
+  - the same phone typed 4 different ways
+  - a customer who says yes to WhatsApp, then replies STOP
+  - erasing a customer, then registering the same phone again
+  - a campaign when nobody has agreed yet
+- [ ] **Research: sending for real.** Write `docs/domain/messaging-providers.md`:
+  - WhatsApp Business Platform (Meta): what's needed (business verification, phone number, message templates), and the cost per marketing message in Malaysia
+  - Email: 2–3 options (company SMTP, SendGrid, Amazon SES), with costs and limits
+- [ ] **Research: PDPA and marketing consent.** Is our consent wording (`admin-web/src/features/customers/consent.js`) clear and fair? What must we do when a customer asks for their data? Official source: `pdp.gov.my`
+
 ## Every week
 
 - [ ] 15-minute stand-up each morning: what you did, what's next, what's blocking you

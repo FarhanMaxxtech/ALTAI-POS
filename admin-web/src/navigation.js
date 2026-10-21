@@ -63,8 +63,10 @@ export const navigation = [
     {
         title: 'Customers',
         items: [
-            { path: '/customers', label: 'Customers', icon: 'users', status: 'planned', phase: 'Phase 5', source: 'ALTAI backend',
-                summary: 'Customer profiles, purchase history and loyalty points.' },
+            { path: '/customers', label: 'Customers', icon: 'users', status: 'ready', page: 'customers', source: 'ALTAI backend',
+                summary: 'Regular customers by phone number, with their consent to WhatsApp and email promotions.' },
+            { path: '/campaigns', label: 'Campaigns', icon: 'megaphone', status: 'ready', page: 'campaigns', source: 'ALTAI backend',
+                summary: 'Promotional messages by WhatsApp or email to customers who agreed to receive them.' },
         ],
     },
     {

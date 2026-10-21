@@ -25,6 +25,12 @@ const config = {
         secret: process.env.AUTH_SECRET || null, // || on purpose: an empty value counts as "not set"
         tokenHours: Number(process.env.AUTH_TOKEN_HOURS ?? 12), // a token lasts one long shift
     },
+    // Promotional messages. 'preview' = messages are recorded and shown, but never sent.
+    // Real email/WhatsApp providers come later (see services/messaging/index.js).
+    messaging: {
+        mode: process.env.MESSAGING_MODE ?? 'preview',
+        businessName: process.env.BUSINESS_NAME ?? 'ALTAI',
+    },
 };
 
 export default config;
