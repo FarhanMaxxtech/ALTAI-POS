@@ -83,3 +83,18 @@ export function groupBySku(tags) {
         .map((row) => ({ ...row, stores: [...row.stores].sort() }))
         .sort((a, b) => a.productName.localeCompare(b.productName) || (a.sku ?? '').localeCompare(b.sku ?? ''));
 }
+
+// The selling price to show for one product row. Tags of the same SKU can sit in different stores,
+// and stores can have different prices. priceMap: { "<store_id>|<sku>": "49.90" or null }.
+// Returns { kind: 'price', price } | { kind: 'varies' } | { kind: 'none' } | { kind: 'unknown' }
+//   price   — every tag of this SKU has the same price
+//   varies  — different stores charge different prices for it
+//   none    — no price is set for it (it can't be sold yet)
+//   unknown — we couldn't look it up (no store on the tags, or the lookup failed)
+export function priceForRow(tags, sku, priceMap) {
+    const keys = [...new Set(tags.filter((t) => t.sku === sku && t.store_id).map((t) => `${t.store_id}|${sku}`))];
+    if (keys.length === 0 || keys.some((k) => !(k in priceMap))) return { kind: 'unknown' };
+    const prices = [...new Set(keys.map((k) => priceMap[k]))];
+    if (prices.length > 1) return { kind: 'varies' };
+    return prices[0] === null ? { kind: 'none' } : { kind: 'price', price: prices[0] };
+}

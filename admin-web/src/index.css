@@ -375,3 +375,25 @@ a.stat:hover { border-color: var(--primary); }
     white-space: pre-wrap; overflow-wrap: anywhere; max-width: 34rem;
     background: var(--ok-bg); color: var(--text); padding: 0.6rem 0.8rem; border-radius: 10px 10px 10px 2px; font-size: 0.92rem;
 }
+
+/* ---------- prices & settings ---------- */
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.toolbar .field { margin-bottom: 0.5rem; min-width: 0; }
+.toolbar > .field:first-child { flex: 0 1 260px; }
+.toolbar-buttons { margin-bottom: 0.5rem; }
+.data-table td.actions { white-space: nowrap; text-align: right; }
+.data-table td.actions .link-button { padding: 0 0 0 0.75rem; font-size: 0.88rem; }
+.history-row td { background: var(--bg); }
+
+.tax-example { margin: 0.5rem 0 1rem; padding: 0.75rem 1rem; background: var(--bg); border-radius: 8px; }
+.tax-example .totals { margin: 0.4rem 0 0.4rem; }
+.tax-example p { margin: 0; }
+
+.receipt-layout { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.5rem; align-items: start; }
+@media (max-width: 760px) { .receipt-layout { grid-template-columns: minmax(0, 1fr); } }
+.receipt-preview {
+    margin: 0; padding: 1rem 0.9rem; width: max-content; max-width: 100%; overflow-x: auto;
+    font: 0.8rem/1.45 ui-monospace, Consolas, monospace;
+    background: #fdfdf8; color: #222; border: 1px dashed var(--border); border-radius: 4px;
+    box-shadow: var(--shadow);
+}

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../../api/client.js';
-import { MAX_PER_REQUEST, chunk, groupBySku, parseEpcs } from './epc.js';
+import { formatRM } from '../../lib/money.js';
+import { MAX_PER_REQUEST, chunk, groupBySku, parseEpcs, priceForRow } from './epc.js';
 
 // PRODUCTS PAGE: find out which products a set of RFID tags belongs to.
 //
@@ -16,6 +17,14 @@ import { MAX_PER_REQUEST, chunk, groupBySku, parseEpcs } from './epc.js';
 // Why tags and not a normal product list? The team's API can tell us about a tag, but it doesn't
 // yet have a "list all products" call. When it does, this page gets a second tab for that.
 
+// The price column: the price, "varies by store", "no price" (can't be sold yet), or "—" (unknown).
+function PriceCell({ price }) {
+    if (price.kind === 'price') return formatRM(price.price);
+    if (price.kind === 'varies') return <span className="muted small">varies by store</span>;
+    if (price.kind === 'none') return <span className="chip warn">no price</span>;
+    return <span className="muted">—</span>;
+}
+
 export default function ProductsPage() {
     // --- What the page remembers ("state") ---
     // React re-draws the page whenever one of these changes.
@@ -24,6 +33,24 @@ export default function ProductsPage() {
     const [loading, setLoading] = useState(false);   // true while we're waiting for the server
     const [progress, setProgress] = useState(null);  // e.g. { done: 200, total: 450 } for big lists
     const [error, setError] = useState(null);        // a message to show if the whole lookup failed
+    const [priceMap, setPriceMap] = useState({});    // "<store_id>|<sku>" → price, from our Prices
+
+    // After a lookup: ask our backend for the selling price of each SKU in the store where its tags
+    // are (one request per store). Prices are extra information: if this fails, the table still shows.
+    useEffect(() => {
+        if (!results?.tags.length) return undefined;
+        let cancelled = false;
+        const skusByStore = {};
+        for (const tag of results.tags) {
+            if (tag.store_id && tag.sku) (skusByStore[tag.store_id] ??= new Set()).add(tag.sku);
+        }
+        Promise.all(Object.entries(skusByStore).map(([storeId, skus]) =>
+            api.post('/prices/resolve', { skus: [...skus].slice(0, 500), store_id: storeId })
+                .then((res) => Object.entries(res.prices).map(([sku, p]) => [`${storeId}|${sku}`, p.price]))
+                .catch(() => []), // e.g. a store this user can't access: those rows show "—"
+        )).then((lists) => { if (!cancelled) setPriceMap(Object.fromEntries(lists.flat())); });
+        return () => { cancelled = true; };
+    }, [results]);
 
     const boxRef = useRef(null);       // a handle on the text box, so we can put the cursor in it
     const stillOnPage = useRef(true);  // false once the user leaves the page, so we stop updating it
@@ -49,6 +76,7 @@ export default function ProductsPage() {
         setLoading(true);
         setError(null);
         setResults(null);
+        setPriceMap({});
 
         // The server takes at most 200 tags per request, so big lists go in batches, one after another.
         const batches = chunk(parsed.epcs, MAX_PER_REQUEST);
@@ -174,6 +202,7 @@ export default function ProductsPage() {
                                         <th>Product</th>
                                         <th>Variation</th>
                                         <th>SKU</th>
+                                        <th className="num">Price</th>
                                         <th className="num">Tags</th>
                                         <th>Store</th>
                                     </tr>
@@ -187,6 +216,7 @@ export default function ProductsPage() {
                                             </td>
                                             <td>{row.variation || '—'}</td>
                                             <td className="mono">{row.sku ?? '—'}</td>
+                                            <td className="num"><PriceCell price={priceForRow(results.tags, row.sku, priceMap)} /></td>
                                             <td className="num">
                                                 {/* Click the number to see the exact tag codes */}
                                                 <details className="epc-details">

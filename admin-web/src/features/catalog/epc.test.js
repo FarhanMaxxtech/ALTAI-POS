@@ -3,7 +3,7 @@
 // by mistake, a test fails before the change reaches the shop.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseEpcs, chunk, groupBySku } from './epc.js';
+import { parseEpcs, chunk, groupBySku, priceForRow } from './epc.js';
 
 test('parseEpcs: one code per line, as a scanner types them', () => {
     const result = parseEpcs('E2801160600002\nE2801160600003\n');
@@ -49,4 +49,18 @@ test('groupBySku: tags of the same SKU become one row with a count', () => {
     assert.deepEqual(blackM.epcs, ['A1', 'A2']);
     assert.deepEqual(blackM.stores, ['MidValley', 'Pavilion']);
     assert.equal(blackM.pendingCount, 1);
+});
+
+test('priceForRow: one price, prices that vary by store, no price, unknown', () => {
+    const tags = [
+        { sku: 'A', store_id: '12' }, { sku: 'A', store_id: '12' },
+        { sku: 'B', store_id: '12' }, { sku: 'B', store_id: '13' },
+        { sku: 'C', store_id: '12' },
+        { sku: 'D', store_id: null },
+    ];
+    const map = { '12|A': '49.90', '12|B': '89.00', '13|B': '79.00', '12|C': null };
+    assert.deepEqual(priceForRow(tags, 'A', map), { kind: 'price', price: '49.90' });
+    assert.deepEqual(priceForRow(tags, 'B', map), { kind: 'varies' });
+    assert.deepEqual(priceForRow(tags, 'C', map), { kind: 'none' });
+    assert.deepEqual(priceForRow(tags, 'D', map), { kind: 'unknown' });
 });

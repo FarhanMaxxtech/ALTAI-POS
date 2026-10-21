@@ -39,7 +39,7 @@ export const navigation = [
         items: [
             { path: '/products', label: 'Products', icon: 'shirt', status: 'ready', page: 'products', source: 'Team API',
                 summary: 'Scan or paste RFID tags to see which products, SKUs and stores they belong to.' },
-            { path: '/prices', label: 'Prices', icon: 'tag', status: 'planned', phase: 'Phase 1', source: 'ALTAI backend',
+            { path: '/prices', label: 'Prices', icon: 'tag', status: 'ready', page: 'prices', source: 'ALTAI backend',
                 summary: 'Set the selling price per SKU and per store, and update a whole style at once.' },
             { path: '/categories', label: 'Categories', icon: 'folder', status: 'planned', phase: 'Phase 1', source: 'Team API',
                 summary: 'How products are grouped, e.g. Tops → T-shirts.' },
@@ -83,7 +83,7 @@ export const navigation = [
                 summary: 'The stores your account can access.' },
             { path: '/staff', label: 'Staff', icon: 'badge', status: 'planned', phase: 'Phase 3', source: 'Team API',
                 summary: 'Staff accounts and what each person is allowed to do.' },
-            { path: '/settings', label: 'Settings', icon: 'settings', status: 'planned', phase: 'Phase 1', source: 'ALTAI backend',
+            { path: '/settings', label: 'Settings', icon: 'settings', status: 'ready', page: 'settings', source: 'ALTAI backend',
                 summary: 'Store details, SST tax settings and the receipt header and footer.' },
         ],
     },

@@ -25,9 +25,10 @@ HTTP request
 | `src/services/inventory/` | Stock per location, movement ledger, transfers, counts |
 | `src/services/sales/` | Cart totals, discounts, tax, payments, returns (not built yet) |
 | `src/services/shifts/` | Till shifts: open, pay-in/out, drops, X/Z report, close with variance |
+| `src/services/pricing/` | Prices per SKU (default + per store, with history), business tax settings, store receipt details |
 | `src/services/customers/` | Customers (by phone), consent history, erasure; promotional campaigns |
 | `src/services/messaging/` | The only code that would send a message to a customer (preview mode for now) |
-| `src/lib/` | Small shared helpers: `money.js` (all cash maths in whole cents), `phone.js` (one standard phone format), validators, errors |
+| `src/lib/` | Small shared helpers: `money.js` (all cash maths in whole cents), `phone.js` (one standard phone format), `tax.js` (SST + 5-sen cash rounding), validators, errors |
 | `src/services/integrations/altai-api/` | The **only** code that calls the team's API (login, stores, tags, stock balance) |
 | `src/db/` | Database connection and migrations (ORM choice: see `docs/decisions/`) |
 | `tests/` | Automated tests, from day one |

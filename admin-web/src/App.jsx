@@ -7,6 +7,8 @@ import CampaignsPage from './features/campaigns/CampaignsPage.jsx';
 import CustomersPage from './features/customers/CustomersPage.jsx';
 import HomePage from './features/home/HomePage.jsx';
 import ProductsPage from './features/catalog/ProductsPage.jsx';
+import PricesPage from './features/pricing/PricesPage.jsx';
+import SettingsPage from './features/settings/SettingsPage.jsx';
 import ShiftsPage from './features/shifts/ShiftsPage.jsx';
 import StoresPage from './features/stores/StoresPage.jsx';
 import { allNavItems } from './navigation.js';
@@ -16,7 +18,9 @@ const pages = {
     campaigns: CampaignsPage,
     customers: CustomersPage,
     home: HomePage,
+    prices: PricesPage,
     products: ProductsPage,
+    settings: SettingsPage,
     shifts: ShiftsPage,
     stores: StoresPage,
 };
