@@ -21,9 +21,11 @@ Without it, these routes answer `503`.
 
 All except login need `Authorization: Bearer <token>` (the token from login).
 
-**The token** packs the user's team-API `SESSION` and their `MERCHANTID` (from the login response) into one
-base64url string, so every later call uses the right merchant. It isn't signed, and doesn't need to be:
-the team API checks the session on every call. Treat it like a password anyway.
+**The token** packs the user's team-API `SESSION`, their `MERCHANTID` (from the login response), their
+login id, name and an expiry time (`AUTH_TOKEN_HOURS`, default 12). It is **signed** (HMAC-SHA256 with
+`AUTH_SECRET` from `.env`): any edit breaks the signature and the token is rejected with 401, before the
+team API is even asked. That matters for data only we store (shifts, cash), where nobody else checks it.
+The contents are readable, not secret: never put a password in it. Treat the whole token like a password.
 Permission ids from `/auth/me` aren't mapped to names yet. Ask the team what each id means.
 
 A tag in `tags` looks like:

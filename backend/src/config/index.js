@@ -20,6 +20,11 @@ const config = {
         merchantId: process.env.ALTAI_MERCHANT_ID ?? '1',
         timeoutMs: Number(process.env.ALTAI_API_TIMEOUT_MS ?? 8000),
     },
+    // Signing key for our login tokens (see token.js). Must be long and random; never commit it.
+    auth: {
+        secret: process.env.AUTH_SECRET || null, // || on purpose: an empty value counts as "not set"
+        tokenHours: Number(process.env.AUTH_TOKEN_HOURS ?? 12), // a token lasts one long shift
+    },
 };
 
 export default config;

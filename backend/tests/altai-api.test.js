@@ -5,7 +5,6 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import express from 'express';
 import request from 'supertest';
-import { encodeToken, decodeToken } from '../src/services/integrations/altai-api/token.js';
 
 // ---------- fake upstream (behaves like the real API as seen in rfid_counter) ----------
 
@@ -53,9 +52,8 @@ fake.get('/rest/Stock/SkuBalance', (req, res) => {
 
 // ---------- start fake, point our config at it, then load our app ----------
 
-let fakeServer, api, config, db;
-// The token our login returns: session + the merchant id from the login response (42, not .env's 7).
-const auth = { Authorization: `Bearer ${encodeToken({ session: FAKE_SESSION, merchantId: '42' })}` };
+let fakeServer, api, config, db, encodeToken, decodeToken, auth;
+
 
 before(async () => {
     fakeServer = fake.listen(0);
@@ -64,10 +62,15 @@ before(async () => {
     process.env.ALTAI_API_KEY = FAKE_KEY;
     process.env.ALTAI_MERCHANT_ID = '7';
     process.env.ALTAI_API_TIMEOUT_MS = '500';
+    process.env.AUTH_SECRET = 'test-secret-for-signing-tokens';
     // Imported only now, so config reads the env vars above (dotenv never overrides set vars).
     ({ default: config } = await import('../src/config/index.js'));
     ({ default: db } = await import('../src/db/index.js'));
     api = request((await import('../src/app.js')).default);
+    ({ encodeToken, decodeToken } = await import('../src/services/integrations/altai-api/token.js'));
+    // A valid token, like the one our login returns: session + the merchant id from the login
+    // response (42, not .env's 7), signed with the test secret.
+    auth = { Authorization: `Bearer ${encodeToken({ session: FAKE_SESSION, merchantId: '42', loginId: 'cashier1', name: 'Aina' })}` };
 });
 
 after(async () => {
@@ -79,7 +82,7 @@ after(async () => {
 
 test('login: token carries the session header + merchant id from the response; user name returned', async () => {
     const res = await api.post('/api/auth/login').send({ login_id: 'cashier1', password: 'test-pass' }).expect(200);
-    assert.deepEqual(decodeToken(res.body.token), { session: FAKE_SESSION, merchantId: '42' });
+    assert.deepEqual(decodeToken(res.body.token), { session: FAKE_SESSION, merchantId: '42', loginId: 'cashier1', name: 'Aina' });
     assert.deepEqual(res.body.user, { name: 'Aina', login_id: 'cashier1', merchant_id: '42' });
 
     const sent = calls.findLast((c) => c.path === '/rest/Merchant/Login');
@@ -115,6 +118,27 @@ test('protected routes: no token / garbage token / expired session → 401', asy
     const expired = encodeToken({ session: 'old-session', merchantId: '42' });
     const res = await api.get('/api/stores').set({ Authorization: `Bearer ${expired}` }).expect(401);
     assert.equal(res.body.details[0].code, 'SESSION_EXPIRED');
+});
+
+test('signed token: edited contents are rejected without calling the team API', async () => {
+    const [payloadPart, signature] = auth.Authorization.slice('Bearer '.length).split('.');
+    const payload = JSON.parse(Buffer.from(payloadPart, 'base64url').toString());
+    // Try to become someone else, keeping the old signature.
+    const forgedPart = Buffer.from(JSON.stringify({ ...payload, n: 'The Boss', m: '99' })).toString('base64url');
+    const before = calls.length;
+    await api.get('/api/stores').set({ Authorization: `Bearer ${forgedPart}.${signature}` }).expect(401);
+    assert.equal(calls.length, before, 'rejected by us, the team API was never asked');
+});
+
+test('signed token: an expired token is rejected', async () => {
+    const savedHours = config.auth.tokenHours;
+    config.auth.tokenHours = -1; // a token that expired an hour ago
+    try {
+        const old = encodeToken({ session: FAKE_SESSION, merchantId: '42', name: 'Aina' });
+        await api.get('/api/stores').set({ Authorization: `Bearer ${old}` }).expect(401);
+    } finally {
+        config.auth.tokenHours = savedHours;
+    }
 });
 
 test('/auth/me returns merchant and permission ids', async () => {

@@ -30,7 +30,7 @@ export const navigation = [
                 summary: 'Every sale with its lines, discounts, payments and receipt number. Filter by date, store and cashier.' },
             { path: '/returns', label: 'Returns', icon: 'return', status: 'planned', phase: 'Phase 4', source: 'ALTAI backend',
                 summary: 'Returns and exchanges, with the original receipt and how the refund was paid.' },
-            { path: '/shifts', label: 'Shifts & cash', icon: 'cash', status: 'planned', phase: 'Phase 3', source: 'ALTAI backend',
+            { path: '/shifts', label: 'Shifts & cash', icon: 'cash', status: 'ready', page: 'shifts', source: 'ALTAI backend',
                 summary: 'Till shifts: opening float, cash in and out, counted cash, and the daily Z report.' },
         ],
     },

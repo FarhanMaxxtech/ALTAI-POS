@@ -29,9 +29,13 @@ export async function login({ login_id, password, epc }) {
     }
 
     const merchantId = String(res.data?.merchantId ?? config.altaiApi.merchantId);
+    const name = String(res.data?.name ?? login_id ?? 'Staff');
+    const loginId = login_id ?? null; // badge logins have no login id
     return {
-        token: encodeToken({ session, merchantId }),
-        user: { name: res.data?.name ?? login_id ?? 'Staff', login_id: login_id ?? null, merchant_id: merchantId },
+        // The user's name and login id go inside the signed token, so later requests can record
+        // who did what (e.g. who opened a shift) without anyone being able to fake it.
+        token: encodeToken({ session, merchantId, loginId, name }),
+        user: { name, login_id: loginId, merchant_id: merchantId },
     };
 }
 

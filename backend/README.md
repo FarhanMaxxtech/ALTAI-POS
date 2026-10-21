@@ -23,7 +23,9 @@ HTTP request
 | `src/controllers/` | Translate HTTP ↔ service calls |
 | `src/services/catalog/` | Products, variants (size × colour), SKUs, barcodes |
 | `src/services/inventory/` | Stock per location, movement ledger, transfers, counts |
-| `src/services/sales/` | Cart totals, discounts, tax, payments, returns |
+| `src/services/sales/` | Cart totals, discounts, tax, payments, returns (not built yet) |
+| `src/services/shifts/` | Till shifts: open, pay-in/out, drops, X/Z report, close with variance |
+| `src/lib/` | Small shared helpers: `money.js` (all cash maths in whole cents), validators, errors |
 | `src/services/integrations/altai-api/` | The **only** code that calls the team's API (login, stores, tags, stock balance) |
 | `src/db/` | Database connection and migrations (ORM choice: see `docs/decisions/`) |
 | `tests/` | Automated tests, from day one |
