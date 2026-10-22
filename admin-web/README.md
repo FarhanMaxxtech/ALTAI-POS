@@ -4,15 +4,23 @@ Back-office site for owners and managers: catalog setup, inventory, reports. It 
 
 | Folder | Responsible for |
 |---|---|
+| `src/navigation.js` | **Every page of the site in one list**: menu label, icon, URL, built or planned. The sidebar and the router both read it |
 | `src/api/` | One API client (base URL, auth token, error handling), used by every feature |
-| `src/components/` | Reusable UI pieces. `AppShell` = top bar around signed-in pages |
+| `src/components/` | Reusable UI pieces: `AppShell` (sidebar layout; a drawer on phones), `Sidebar`, `Icon`, `ComingSoon` (page for planned items) |
 | `src/features/auth/` | Login page (ID + password, or staff badge), `AuthContext` (who is logged in), `RequireAuth` (route guard) |
-| `src/features/home/` | First page after login: welcome + store list |
+| `src/features/home/` | Dashboard: welcome, store count, pages coming next |
+| `src/features/stores/` | Store list (from the team API) |
 | `src/features/catalog/` | Products, variants, SKUs, barcodes (not built yet) |
 | `src/features/inventory/` | Stock levels, transfers, counts (not built yet) |
 | `src/features/reports/` | Sales and stock reports (not built yet) |
 
 Built with **Vite + React 19 + React Router**. Plain CSS in `src/index.css` (colour variables at the top, light and dark mode).
+
+## Adding a page
+
+1. In `src/navigation.js`, add (or find) the item. A `planned` item already shows in the menu with a "Soon" tag and a "not built yet" page.
+2. Build the page in `src/features/<area>/<Name>Page.jsx`. Handle loading, error and empty states, like `StoresPage.jsx`.
+3. Switch it on: set the item to `status: 'ready'` with a `page` key, and add that key to `pages` in `src/App.jsx`.
 
 ## Run it
 

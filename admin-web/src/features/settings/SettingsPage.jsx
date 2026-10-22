@@ -39,7 +39,7 @@ function StoreCard({ store }) {
             {open && (
                 <>
                     <p>Address: {store.address}</p>
-                    <p>Tax: {store.tax_rate}</p>
+                    <p>Tax: {store.tax_rate}%</p>
                     <p>Price Include Tax: {store.prices_include_tax ? 'Yes' : 'No'}</p>
                     <p>Receipt Footer: {store.receipt_footer}</p>
                 </>
