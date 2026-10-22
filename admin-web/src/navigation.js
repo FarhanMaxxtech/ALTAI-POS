@@ -81,7 +81,7 @@ export const navigation = [
                 summary: 'The stores your account can access.' },
             { path: '/staff', label: 'Staff', icon: 'badge', status: 'planned', phase: 'Phase 3', source: 'Team API',
                 summary: 'Staff accounts and what each person is allowed to do.' },
-            { path: '/settings', label: 'Settings', icon: 'settings', status: 'planned', phase: 'Phase 1', source: 'ALTAI backend',
+            { path: '/settings', label: 'Settings', icon: 'settings', status: 'ready', page: 'settings',
                 summary: 'Store details, SST tax settings and the receipt header and footer.' },
         ],
     },
