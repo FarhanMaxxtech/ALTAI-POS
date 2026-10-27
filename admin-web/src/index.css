@@ -60,6 +60,12 @@ p { margin: 0 0 0.75rem; }
     padding: 1.25rem;
     margin-top: 1rem;
 }
+.card-header { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.card-title {
+    font: inherit; font-size: 1.05rem; font-weight: 600;
+    background: none; border: 0; padding: 0;
+    color: var(--text); cursor: pointer; text-align: left;
+}
 
 /* ---------- buttons ---------- */
 .button {
@@ -76,6 +82,8 @@ p { margin: 0 0 0.75rem; }
 .button.primary:hover { filter: brightness(1.08); }
 .button:disabled { opacity: 0.6; cursor: wait; }
 .button.full { width: 100%; padding: 0.7rem; margin-top: 0.5rem; }
+.button.save { background: green;}
+.button.cancel { background: red;}
 .link-button { font: inherit; background: none; border: 0; color: var(--primary); cursor: pointer; padding: 0 0.75rem; }
 
 /* ---------- forms ---------- */
@@ -95,6 +103,16 @@ p { margin: 0 0 0.75rem; }
 .input-with-action input { border: 0; background: transparent; }
 .input-with-action:focus-within { outline: 2px solid var(--primary); outline-offset: 1px; }
 .input-with-action input:focus { outline: none; }
+.input-small {
+    font: inherit;
+    width: 7rem;
+    padding: 0.4rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    color: var(--text);
+}
+.input-small:focus { outline: 2px solid var(--primary); outline-offset: 1px; }
 
 .alert { padding: 0.6rem 0.75rem; border-radius: 8px; font-size: 0.9rem; }
 .alert.error { background: var(--error-bg); color: var(--error-text); }
@@ -124,7 +142,7 @@ p { margin: 0 0 0.75rem; }
     position: sticky; top: 0; height: 100vh;
     background: var(--surface); border-right: 1px solid var(--border);
 }
-.content { padding: 1.75rem 2rem 3rem; max-width: 1100px; width: 100%; }
+.content { padding: 1.75rem 2rem 3rem; max-width: 1100px; width: 100%; margin: 0 auto; }
 /* .shell in front makes these beat the later .icon-button { display } rule on wide screens. */
 .shell .mobile-bar, .shell .backdrop, .shell .drawer-close { display: none; }
 
@@ -218,3 +236,17 @@ a.stat:hover { border-color: var(--primary); }
 .facts { display: flex; flex-wrap: wrap; gap: 0.5rem 2.5rem; margin: 0.5rem 0 0; }
 .facts dt { font-size: 0.78rem; color: var(--muted); }
 .facts dd { margin: 0; font-weight: 600; }
+
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--border); white-space: nowrap}
+.table th { color: var(--muted); font-size: 0.85rem; }
+.table .price {text-align: right; }
+.table-wrap { overflow-x: auto; }
+
+.toolbar { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; }
+.toolbar .field:first-child{ flex: 1; }
+.store-select {padding: 0.6rem 0.75rem; min-width: 12rem; }
+
+@media (max-width: 480px) {
+    .store-select { min-width: 0; width: 100%; }
+}

@@ -5,12 +5,14 @@ import LoginPage from './features/auth/LoginPage.jsx';
 import RequireAuth from './features/auth/RequireAuth.jsx';
 import HomePage from './features/home/HomePage.jsx';
 import StoresPage from './features/stores/StoresPage.jsx';
+import PricesPage from './features/prices/PricesPage.jsx';
 import { allNavItems } from './navigation.js';
 
 // Built pages, by the `page` key used in navigation.js.
 const pages = {
     home: HomePage,
     stores: StoresPage,
+    prices: PricesPage,
 };
 
 // Every URL of the admin site. The routes are generated from navigation.js, so every menu item

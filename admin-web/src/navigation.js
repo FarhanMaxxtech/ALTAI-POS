@@ -39,7 +39,7 @@ export const navigation = [
         items: [
             { path: '/products', label: 'Products', icon: 'shirt', status: 'planned', phase: 'Phase 1', source: 'Team API',
                 summary: 'Styles and their variants (size × colour) with SKU and barcode.' },
-            { path: '/prices', label: 'Prices', icon: 'tag', status: 'planned', phase: 'Phase 1', source: 'ALTAI backend',
+            { path: '/prices', label: 'Prices', icon: 'tag', status: 'ready', page: 'prices',
                 summary: 'Set the selling price per SKU and per store, and update a whole style at once.' },
             { path: '/categories', label: 'Categories', icon: 'folder', status: 'planned', phase: 'Phase 1', source: 'Team API',
                 summary: 'How products are grouped, e.g. Tops → T-shirts.' },
