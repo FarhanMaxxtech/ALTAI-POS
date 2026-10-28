@@ -28,6 +28,28 @@ export default function SettingsPage() {
 
 function StoreCard({ store }) {
     const [open, setOpen] = useState(false);
+    const [draft, setDraft] = useState(store);
+    const [editing, setEditing] = useState(false);
+
+    function edit() {
+        setDraft(variant.price ?? basePrice);
+        setEditing(true);
+    }
+
+    function save() {
+        if (!isValidPrice(draft)) {
+            setMessage('Enter a valid price!');
+            return;
+        }
+        setMessage(null);
+        onSave(variant.id, draft);
+        setEditing(false)
+    }
+
+    function cancel() {
+        setMessage(null);
+        setEditing(false);
+    }
 
     return (
         <section className="card">
@@ -36,14 +58,29 @@ function StoreCard({ store }) {
                 {open ? 'Hide details' : 'Show details'}
             </button>
 
-            {open && (
+            { open && (
+            editing ? (
+                <div>
+                    <label className='field'>
+                        <span>Name</span>
+                        <input value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+                    </label>
+                    <label className='field'>
+                        <span>Address</span>
+                        <input value={draft.address} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+                    </label>
+                    <button type="button" className='button' onClick={setEditing(false)}>Cancel</button>
+                </div>
+            ) : (
                 <>
                     <p>Address: {store.address}</p>
                     <p>Tax: {store.tax_rate}%</p>
                     <p>Price Include Tax: {store.prices_include_tax ? 'Yes' : 'No'}</p>
                     <p>Receipt Footer: {store.receipt_footer}</p>
+                    <button type='button' className='button' onClick={() => { setDraft(store); setEditing(true);}}>Edit</button>
                 </>
-            )}
+            )
+        )}
         </section>
     );
 }
