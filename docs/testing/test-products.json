@@ -1,0 +1,819 @@
+[
+  {
+    "style_code": "CT-001",
+    "name": "Classic Tee",
+    "brand": "Altai Basics",
+    "base_price": "49.90",
+    "variants": [
+      {
+        "sku": "CT-001-BLK-S",
+        "barcode": "9556000000010",
+        "color": "Black",
+        "size": "S"
+      },
+      {
+        "sku": "CT-001-BLK-M",
+        "barcode": "9556000000027",
+        "color": "Black",
+        "size": "M"
+      },
+      {
+        "sku": "CT-001-BLK-L",
+        "barcode": "9556000000034",
+        "color": "Black",
+        "size": "L"
+      },
+      {
+        "sku": "CT-001-BLK-XL",
+        "barcode": "9556000000041",
+        "color": "Black",
+        "size": "XL"
+      },
+      {
+        "sku": "CT-001-WHT-S",
+        "barcode": "9556000000058",
+        "color": "White",
+        "size": "S"
+      },
+      {
+        "sku": "CT-001-WHT-M",
+        "barcode": "9556000000065",
+        "color": "White",
+        "size": "M"
+      },
+      {
+        "sku": "CT-001-WHT-L",
+        "barcode": "9556000000072",
+        "color": "White",
+        "size": "L"
+      },
+      {
+        "sku": "CT-001-WHT-XL",
+        "barcode": "9556000000089",
+        "color": "White",
+        "size": "XL"
+      },
+      {
+        "sku": "CT-001-NVY-S",
+        "barcode": "9556000000096",
+        "color": "Navy",
+        "size": "S"
+      },
+      {
+        "sku": "CT-001-NVY-M",
+        "barcode": "9556000000102",
+        "color": "Navy",
+        "size": "M"
+      },
+      {
+        "sku": "CT-001-NVY-L",
+        "barcode": "9556000000119",
+        "color": "Navy",
+        "size": "L"
+      },
+      {
+        "sku": "CT-001-NVY-XL",
+        "barcode": "9556000000126",
+        "color": "Navy",
+        "size": "XL"
+      }
+    ]
+  },
+  {
+    "style_code": "PL-002",
+    "name": "Polo Shirt",
+    "brand": "Altai Basics",
+    "base_price": "69.90",
+    "variants": [
+      {
+        "sku": "PL-002-NVY-S",
+        "barcode": "9556000000133",
+        "color": "Navy",
+        "size": "S"
+      },
+      {
+        "sku": "PL-002-NVY-M",
+        "barcode": "9556000000140",
+        "color": "Navy",
+        "size": "M"
+      },
+      {
+        "sku": "PL-002-NVY-L",
+        "barcode": "9556000000157",
+        "color": "Navy",
+        "size": "L"
+      },
+      {
+        "sku": "PL-002-NVY-XL",
+        "barcode": "9556000000164",
+        "color": "Navy",
+        "size": "XL",
+        "price": "74.90"
+      },
+      {
+        "sku": "PL-002-WHT-S",
+        "barcode": "9556000000171",
+        "color": "White",
+        "size": "S"
+      },
+      {
+        "sku": "PL-002-WHT-M",
+        "barcode": "9556000000188",
+        "color": "White",
+        "size": "M"
+      },
+      {
+        "sku": "PL-002-WHT-L",
+        "barcode": "9556000000195",
+        "color": "White",
+        "size": "L"
+      },
+      {
+        "sku": "PL-002-WHT-XL",
+        "barcode": "9556000000201",
+        "color": "White",
+        "size": "XL",
+        "price": "74.90"
+      }
+    ]
+  },
+  {
+    "style_code": "OX-003",
+    "name": "Oxford Shirt",
+    "brand": "Altai Studio",
+    "base_price": "99.90",
+    "variants": [
+      {
+        "sku": "OX-003-LBL-S",
+        "barcode": "9556000000218",
+        "color": "Light Blue",
+        "size": "S"
+      },
+      {
+        "sku": "OX-003-LBL-M",
+        "barcode": "9556000000225",
+        "color": "Light Blue",
+        "size": "M"
+      },
+      {
+        "sku": "OX-003-LBL-L",
+        "barcode": "9556000000232",
+        "color": "Light Blue",
+        "size": "L"
+      },
+      {
+        "sku": "OX-003-LBL-XL",
+        "barcode": "9556000000249",
+        "color": "Light Blue",
+        "size": "XL"
+      },
+      {
+        "sku": "OX-003-WHT-S",
+        "barcode": "9556000000256",
+        "color": "White",
+        "size": "S"
+      },
+      {
+        "sku": "OX-003-WHT-M",
+        "barcode": "9556000000263",
+        "color": "White",
+        "size": "M"
+      },
+      {
+        "sku": "OX-003-WHT-L",
+        "barcode": "9556000000270",
+        "color": "White",
+        "size": "L"
+      },
+      {
+        "sku": "OX-003-WHT-XL",
+        "barcode": "9556000000287",
+        "color": "White",
+        "size": "XL"
+      }
+    ]
+  },
+  {
+    "style_code": "LS-004",
+    "name": "Linen Shirt",
+    "brand": "Altai Studio",
+    "base_price": "119.00",
+    "variants": [
+      {
+        "sku": "LS-004-BEI-M",
+        "barcode": "9556000000294",
+        "color": "Beige",
+        "size": "M"
+      },
+      {
+        "sku": "LS-004-BEI-L",
+        "barcode": "9556000000300",
+        "color": "Beige",
+        "size": "L"
+      }
+    ]
+  },
+  {
+    "style_code": "HD-005",
+    "name": "Zip Hoodie",
+    "brand": "Altai Basics",
+    "base_price": "89.90",
+    "variants": [
+      {
+        "sku": "HD-005-GRY-M",
+        "barcode": "9556000000317",
+        "color": "Grey",
+        "size": "M"
+      },
+      {
+        "sku": "HD-005-GRY-L",
+        "barcode": "9556000000324",
+        "color": "Grey",
+        "size": "L"
+      },
+      {
+        "sku": "HD-005-GRY-XL",
+        "barcode": "9556000000331",
+        "color": "Grey",
+        "size": "XL"
+      },
+      {
+        "sku": "HD-005-GRY-XXL",
+        "barcode": "9556000000348",
+        "color": "Grey",
+        "size": "XXL",
+        "price": "99.90"
+      },
+      {
+        "sku": "HD-005-BLK-M",
+        "barcode": "9556000000355",
+        "color": "Black",
+        "size": "M"
+      },
+      {
+        "sku": "HD-005-BLK-L",
+        "barcode": "9556000000362",
+        "color": "Black",
+        "size": "L"
+      },
+      {
+        "sku": "HD-005-BLK-XL",
+        "barcode": "9556000000379",
+        "color": "Black",
+        "size": "XL"
+      },
+      {
+        "sku": "HD-005-BLK-XXL",
+        "barcode": "9556000000386",
+        "color": "Black",
+        "size": "XXL",
+        "price": "99.90"
+      }
+    ]
+  },
+  {
+    "style_code": "SJ-006",
+    "name": "Slim Jeans",
+    "brand": "Altai Denim",
+    "base_price": "129.00",
+    "variants": [
+      {
+        "sku": "SJ-006-BLU-28",
+        "barcode": "9556000000393",
+        "color": "Blue",
+        "size": "28"
+      },
+      {
+        "sku": "SJ-006-BLU-30",
+        "barcode": "9556000000409",
+        "color": "Blue",
+        "size": "30"
+      },
+      {
+        "sku": "SJ-006-BLU-32",
+        "barcode": "9556000000416",
+        "color": "Blue",
+        "size": "32"
+      },
+      {
+        "sku": "SJ-006-BLU-34",
+        "barcode": "9556000000423",
+        "color": "Blue",
+        "size": "34"
+      },
+      {
+        "sku": "SJ-006-BLU-36",
+        "barcode": "9556000000430",
+        "color": "Blue",
+        "size": "36"
+      },
+      {
+        "sku": "SJ-006-BLK-28",
+        "barcode": "9556000000447",
+        "color": "Black",
+        "size": "28"
+      },
+      {
+        "sku": "SJ-006-BLK-30",
+        "barcode": "9556000000454",
+        "color": "Black",
+        "size": "30"
+      },
+      {
+        "sku": "SJ-006-BLK-32",
+        "barcode": "9556000000461",
+        "color": "Black",
+        "size": "32"
+      },
+      {
+        "sku": "SJ-006-BLK-34",
+        "barcode": "9556000000478",
+        "color": "Black",
+        "size": "34"
+      },
+      {
+        "sku": "SJ-006-BLK-36",
+        "barcode": "9556000000485",
+        "color": "Black",
+        "size": "36"
+      }
+    ]
+  },
+  {
+    "style_code": "CH-007",
+    "name": "Chino Pants",
+    "brand": "Altai Studio",
+    "base_price": "99.00",
+    "variants": [
+      {
+        "sku": "CH-007-KHK-28",
+        "barcode": "9556000000492",
+        "color": "Khaki",
+        "size": "28"
+      },
+      {
+        "sku": "CH-007-KHK-30",
+        "barcode": "9556000000508",
+        "color": "Khaki",
+        "size": "30"
+      },
+      {
+        "sku": "CH-007-KHK-32",
+        "barcode": "9556000000515",
+        "color": "Khaki",
+        "size": "32"
+      },
+      {
+        "sku": "CH-007-KHK-34",
+        "barcode": "9556000000522",
+        "color": "Khaki",
+        "size": "34"
+      },
+      {
+        "sku": "CH-007-NVY-28",
+        "barcode": "9556000000539",
+        "color": "Navy",
+        "size": "28"
+      },
+      {
+        "sku": "CH-007-NVY-30",
+        "barcode": "9556000000546",
+        "color": "Navy",
+        "size": "30"
+      },
+      {
+        "sku": "CH-007-NVY-32",
+        "barcode": "9556000000553",
+        "color": "Navy",
+        "size": "32"
+      },
+      {
+        "sku": "CH-007-NVY-34",
+        "barcode": "9556000000560",
+        "color": "Navy",
+        "size": "34"
+      }
+    ]
+  },
+  {
+    "style_code": "SH-008",
+    "name": "Cargo Shorts",
+    "brand": "Altai Basics",
+    "base_price": "59.90",
+    "variants": [
+      {
+        "sku": "SH-008-OLV-S",
+        "color": "Olive",
+        "size": "S"
+      },
+      {
+        "sku": "SH-008-OLV-M",
+        "color": "Olive",
+        "size": "M"
+      },
+      {
+        "sku": "SH-008-OLV-L",
+        "color": "Olive",
+        "size": "L"
+      }
+    ]
+  },
+  {
+    "style_code": "DR-009",
+    "name": "Midi Dress",
+    "brand": "Altai Studio",
+    "base_price": "139.00",
+    "variants": [
+      {
+        "sku": "DR-009-BLK-XS",
+        "barcode": "9556000000577",
+        "color": "Black",
+        "size": "XS"
+      },
+      {
+        "sku": "DR-009-BLK-S",
+        "barcode": "9556000000584",
+        "color": "Black",
+        "size": "S"
+      },
+      {
+        "sku": "DR-009-BLK-M",
+        "barcode": "9556000000591",
+        "color": "Black",
+        "size": "M"
+      },
+      {
+        "sku": "DR-009-BLK-L",
+        "barcode": "9556000000607",
+        "color": "Black",
+        "size": "L"
+      },
+      {
+        "sku": "DR-009-MRN-XS",
+        "barcode": "9556000000614",
+        "color": "Maroon",
+        "size": "XS"
+      },
+      {
+        "sku": "DR-009-MRN-S",
+        "barcode": "9556000000621",
+        "color": "Maroon",
+        "size": "S"
+      },
+      {
+        "sku": "DR-009-MRN-M",
+        "barcode": "9556000000638",
+        "color": "Maroon",
+        "size": "M"
+      },
+      {
+        "sku": "DR-009-MRN-L",
+        "barcode": "9556000000645",
+        "color": "Maroon",
+        "size": "L"
+      }
+    ]
+  },
+  {
+    "style_code": "BL-010",
+    "name": "Blouse",
+    "brand": "Altai Studio",
+    "base_price": "79.90",
+    "variants": [
+      {
+        "sku": "BL-010-WHT-S",
+        "barcode": "9556000000652",
+        "color": "White",
+        "size": "S"
+      },
+      {
+        "sku": "BL-010-WHT-M",
+        "barcode": "9556000000669",
+        "color": "White",
+        "size": "M"
+      },
+      {
+        "sku": "BL-010-WHT-L",
+        "barcode": "9556000000676",
+        "color": "White",
+        "size": "L"
+      },
+      {
+        "sku": "BL-010-PNK-S",
+        "barcode": "9556000000683",
+        "color": "Pink",
+        "size": "S"
+      },
+      {
+        "sku": "BL-010-PNK-M",
+        "barcode": "9556000000690",
+        "color": "Pink",
+        "size": "M"
+      },
+      {
+        "sku": "BL-010-PNK-L",
+        "barcode": "9556000000706",
+        "color": "Pink",
+        "size": "L"
+      }
+    ]
+  },
+  {
+    "style_code": "SK-011",
+    "name": "Pleated Skirt",
+    "brand": "Altai Studio",
+    "base_price": "69.00",
+    "variants": [
+      {
+        "sku": "SK-011-BLK-S",
+        "barcode": "9556000000713",
+        "color": "Black",
+        "size": "S"
+      },
+      {
+        "sku": "SK-011-BLK-M",
+        "barcode": "9556000000720",
+        "color": "Black",
+        "size": "M"
+      },
+      {
+        "sku": "SK-011-BLK-L",
+        "barcode": "9556000000737",
+        "color": "Black",
+        "size": "L"
+      }
+    ]
+  },
+  {
+    "style_code": "BK-012",
+    "name": "Baju Kurung",
+    "brand": "Altai Tradisi",
+    "base_price": "199.00",
+    "variants": [
+      {
+        "sku": "BK-012-EMR-S",
+        "barcode": "9556000000744",
+        "color": "Emerald",
+        "size": "S",
+        "price": "189.00"
+      },
+      {
+        "sku": "BK-012-EMR-M",
+        "barcode": "9556000000751",
+        "color": "Emerald",
+        "size": "M",
+        "price": "189.00"
+      },
+      {
+        "sku": "BK-012-EMR-L",
+        "barcode": "9556000000768",
+        "color": "Emerald",
+        "size": "L",
+        "price": "199.00"
+      },
+      {
+        "sku": "BK-012-EMR-XL",
+        "barcode": "9556000000775",
+        "color": "Emerald",
+        "size": "XL",
+        "price": "209.00"
+      },
+      {
+        "sku": "BK-012-NVY-S",
+        "barcode": "9556000000782",
+        "color": "Navy",
+        "size": "S",
+        "price": "189.00"
+      },
+      {
+        "sku": "BK-012-NVY-M",
+        "barcode": "9556000000799",
+        "color": "Navy",
+        "size": "M",
+        "price": "189.00"
+      },
+      {
+        "sku": "BK-012-NVY-L",
+        "barcode": "9556000000805",
+        "color": "Navy",
+        "size": "L",
+        "price": "199.00"
+      },
+      {
+        "sku": "BK-012-NVY-XL",
+        "barcode": "9556000000812",
+        "color": "Navy",
+        "size": "XL",
+        "price": "209.00"
+      }
+    ]
+  },
+  {
+    "style_code": "JK-013",
+    "name": "Denim Jacket",
+    "brand": "Altai Denim",
+    "base_price": "159.90",
+    "variants": [
+      {
+        "sku": "JK-013-BLU-M",
+        "barcode": "9556000000829",
+        "color": "Blue",
+        "size": "M"
+      },
+      {
+        "sku": "JK-013-BLU-L",
+        "barcode": "9556000000836",
+        "color": "Blue",
+        "size": "L"
+      }
+    ]
+  },
+  {
+    "style_code": "KT-014",
+    "name": "Kids Tee",
+    "brand": "Altai Kids",
+    "base_price": "29.90",
+    "variants": [
+      {
+        "sku": "KT-014-YLW-4Y",
+        "barcode": "9556000000843",
+        "color": "Yellow",
+        "size": "4Y"
+      },
+      {
+        "sku": "KT-014-YLW-6Y",
+        "barcode": "9556000000850",
+        "color": "Yellow",
+        "size": "6Y"
+      },
+      {
+        "sku": "KT-014-YLW-8Y",
+        "barcode": "9556000000867",
+        "color": "Yellow",
+        "size": "8Y"
+      },
+      {
+        "sku": "KT-014-YLW-10Y",
+        "barcode": "9556000000874",
+        "color": "Yellow",
+        "size": "10Y"
+      },
+      {
+        "sku": "KT-014-BLU-4Y",
+        "barcode": "9556000000881",
+        "color": "Blue",
+        "size": "4Y"
+      },
+      {
+        "sku": "KT-014-BLU-6Y",
+        "barcode": "9556000000898",
+        "color": "Blue",
+        "size": "6Y"
+      },
+      {
+        "sku": "KT-014-BLU-8Y",
+        "barcode": "9556000000904",
+        "color": "Blue",
+        "size": "8Y"
+      },
+      {
+        "sku": "KT-014-BLU-10Y",
+        "barcode": "9556000000911",
+        "color": "Blue",
+        "size": "10Y"
+      }
+    ]
+  },
+  {
+    "style_code": "SN-015",
+    "name": "Sneakers",
+    "brand": "Altai Move",
+    "base_price": "179.00",
+    "variants": [
+      {
+        "sku": "SN-015-WHT-38",
+        "barcode": "9556000000928",
+        "color": "White",
+        "size": "38"
+      },
+      {
+        "sku": "SN-015-WHT-39",
+        "barcode": "9556000000935",
+        "color": "White",
+        "size": "39"
+      },
+      {
+        "sku": "SN-015-WHT-40",
+        "barcode": "9556000000942",
+        "color": "White",
+        "size": "40"
+      },
+      {
+        "sku": "SN-015-WHT-41",
+        "barcode": "9556000000959",
+        "color": "White",
+        "size": "41"
+      },
+      {
+        "sku": "SN-015-WHT-42",
+        "barcode": "9556000000966",
+        "color": "White",
+        "size": "42"
+      },
+      {
+        "sku": "SN-015-WHT-43",
+        "barcode": "9556000000973",
+        "color": "White",
+        "size": "43"
+      }
+    ]
+  },
+  {
+    "style_code": "SC-016",
+    "name": "Socks 3-Pack",
+    "brand": "Altai Basics",
+    "base_price": "19.90",
+    "variants": [
+      {
+        "sku": "SC-016-BLK-OS",
+        "barcode": "9556000000980",
+        "color": "Black",
+        "size": "One Size"
+      },
+      {
+        "sku": "SC-016-WHT-OS",
+        "barcode": "9556000000997",
+        "color": "White",
+        "size": "One Size"
+      }
+    ]
+  },
+  {
+    "style_code": "CP-017",
+    "name": "Baseball Cap",
+    "brand": "Altai Basics",
+    "base_price": "39.90",
+    "variants": [
+      {
+        "sku": "CP-017-BLK-OS",
+        "barcode": "9556000001000",
+        "color": "Black",
+        "size": "One Size"
+      },
+      {
+        "sku": "CP-017-BEI-OS",
+        "barcode": "9556000001017",
+        "color": "Beige",
+        "size": "One Size"
+      }
+    ]
+  },
+  {
+    "style_code": "BT-018",
+    "name": "Leather Belt",
+    "brand": "Altai Studio",
+    "base_price": "59.00",
+    "variants": [
+      {
+        "sku": "BT-018-BRN-90",
+        "barcode": "9556000001024",
+        "color": "Brown",
+        "size": "90 cm"
+      },
+      {
+        "sku": "BT-018-BRN-100",
+        "barcode": "9556000001031",
+        "color": "Brown",
+        "size": "100 cm"
+      },
+      {
+        "sku": "BT-018-BRN-110",
+        "barcode": "9556000001048",
+        "color": "Brown",
+        "size": "110 cm"
+      }
+    ]
+  },
+  {
+    "style_code": "TB-019",
+    "name": "Tote Bag",
+    "brand": "Altai Basics",
+    "base_price": "25.00",
+    "variants": [
+      {
+        "sku": "TB-019"
+      }
+    ]
+  },
+  {
+    "style_code": "GW-020",
+    "name": "Gift Wrap",
+    "brand": "Altai Basics",
+    "base_price": "0.00",
+    "variants": [
+      {
+        "sku": "GW-020"
+      }
+    ]
+  }
+]
