@@ -26,7 +26,7 @@ export const navigation = [
     {
         title: 'Sales',
         items: [
-            { path: '/sales', label: 'Sales', icon: 'receipt', status: 'planned', phase: 'Phase 2', source: 'ALTAI backend',
+            { path: '/sales', label: 'Sales', icon: 'receipt', status: 'ready', page: 'sales',
                 summary: 'Every sale with its lines, discounts, payments and receipt number. Filter by date, store and cashier.' },
             { path: '/returns', label: 'Returns', icon: 'return', status: 'planned', phase: 'Phase 4', source: 'ALTAI backend',
                 summary: 'Returns and exchanges, with the original receipt and how the refund was paid.' },
